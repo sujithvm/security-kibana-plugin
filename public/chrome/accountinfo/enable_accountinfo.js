@@ -39,7 +39,7 @@ import { chromeWrapper } from "../../services/chrome_wrapper";
 
 export function toggleAccountInfoLink(Private) {
     var enabled = chrome.getInjected('accountinfo_enabled');
-    chromeWrapper.hideNavLink('security-accountinfo', !enabled);
+    chromeWrapper.hideNavLink('security-accountinfo', false);
 }
 
 uiModules.get('security').run(toggleAccountInfoLink);

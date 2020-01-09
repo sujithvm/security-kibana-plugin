@@ -30,6 +30,8 @@ uiModules.get('apps/opendistro_security/configuration', [])
             let dataToSave = cloneDeep(data);
             dataToSave = this.preSave(dataToSave);
 
+            console.log("backendInternalUsers save RESOURCE:" + RESOURCE + " username: " + username + " dataToSave: " + dataToSave)
+            console.log(dataToSave)
             return backendAPI.save(RESOURCE, username, dataToSave, false);
         };
 

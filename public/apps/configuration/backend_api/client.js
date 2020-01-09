@@ -49,6 +49,24 @@ uiModules.get('apps/opendistro_security/configuration', [])
                 });
         };
 
+        this.get = function(resourceName) {
+            return $http.get(`${AUTH_BACKEND_API_ROOT}/configuration/${resourceName}`)
+                .then((response) => {
+                    return response.data;
+                })
+                .catch((error) => {
+                    if (error.status == 403) {
+                        securityAccessControl.logout();
+                    } else {
+                        toastNotifications.addDanger({
+                            title: 'Unable to load data.',
+                            text: error.data.message || error.statusText
+                        });
+                    }
+                    throw error;
+                });
+        };
+
         this.getSilent = function(resourceName, id, showError) {
             showError = typeof showError !== 'undefined' ? showError : true;
             return $http.get(`${AUTH_BACKEND_API_ROOT}/configuration/${resourceName}/${id}`)
@@ -62,6 +80,7 @@ uiModules.get('apps/opendistro_security/configuration', [])
 
         this.save = (resourceName, id, data, showToastOnError = true) => {
             let url = `${AUTH_BACKEND_API_ROOT}/configuration/${resourceName}/${id}`;
+            console.log("clientjs save url: " + url);
             return $http.post(url, data)
                 .then((response) => {
                     toastNotifications.addSuccess({
@@ -69,8 +88,10 @@ uiModules.get('apps/opendistro_security/configuration', [])
                     });
                 })
                 .catch((error) => {
+                    console.log("error")
+                    console.log(error)
                     if (error.status == 403) {
-                        securityAccessControl.logout();
+                       // securityAccessControl.logout();
                     } else if(showToastOnError) {
                         toastNotifications.addDanger({
                             text: error.data.message || error.statusText

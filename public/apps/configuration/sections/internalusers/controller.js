@@ -119,7 +119,7 @@ app.controller('securityEditInternalUsersController', function ($scope, $element
             return;
         }
 
-
+        
         if (form.hasClass('ng-invalid-required')) {
             $scope.errorMessage = 'Please fill in all the required parameters.';
             return;
@@ -152,6 +152,10 @@ app.controller('securityEditInternalUsersController', function ($scope, $element
             }
             $scope.resource.opendistro_security_roles = opendistro_security_roles;
         }
+
+        console.log("securityEditInternalUsersController resourcename:" + $scope.resourcename + " resource:"+ $scope.resource);
+        console.log($scope.resource);
+
 
         $scope.service.save($scope.resourcename, $scope.resource)
           .then(

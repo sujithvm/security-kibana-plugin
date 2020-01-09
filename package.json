@@ -10,7 +10,7 @@
     "url": "https://github.com/opendistro-for-elasticsearch/security-kibana-plugin"
   },
   "scripts": {
-    "kbn": "node ../../scripts/kbn",
+    "kbn": "node ../../kibana/scripts/kbn",
     "lint": "./node_modules/.bin/eslint .",
     "start": "plugin-helpers start",
     "test:server": "plugin-helpers test:server",
@@ -19,7 +19,7 @@
     "build": "plugin-helpers build"
   },
   "dependencies": {
-    "@elastic/eui": "^12.2.0",
+    "@elastic/eui": "^17.3.1",
     "@elastic/kibana-ui-framework": "0.0.11",
     "@types/react": "^16.8.14",
     "@types/react-dom": "^16.8.4",
@@ -51,6 +51,7 @@
     "@babel/preset-react": "^7.0.0",
     "babel-eslint": "^9.0.0",
     "core-js": "^3.2.1",
+    "@kbn/plugin-helpers": "link:../../kibana/packages/kbn-plugin-helpers",
     "eslint": "^5.6.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-plugin-babel": "^5.2.0",

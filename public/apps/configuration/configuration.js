@@ -32,7 +32,9 @@
 import chrome from 'ui/chrome';
 import uiRoutes from 'ui/routes';
 import { uiModules } from 'ui/modules';
-import { kbnUrlDirective} from "../../../../../src/legacy/ui/public/directives/kbn_href";
+
+import { kbnUrlDirective} from "/Users/svadakke/Projects/OpenDistro/kibana/src/legacy/ui/public/directives/kbn_href";
+//import { kbnUrlDirective} from "../../../../../src/legacy/ui/public/directives/kbn_href";
 
 import internalusers from './sections/internalusers';
 import actiongroups from './sections/actiongroups';
