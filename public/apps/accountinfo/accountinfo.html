@@ -8,8 +8,9 @@
                <h1 class="euiTitle euiTitle--large">
                   {{resourcelabel}}: {{resourcename}}
                </h1>
-               <div class="euiSpacer euiSpacer--m"></div>
-               <div class="euiPanel euiPanel--paddingLarge" ng-show="!security_user.is_reserved">
+               <div ng-show="!security_user.is_reserved">
+               <div class="euiSpacer euiSpacer--m" ></div>
+               <div class="euiPanel euiPanel--paddingLarge" >
                   <h2 class="euiTitle euiTitle--medium">Password</h2>
                   <div class="euiSpacer euiSpacer--m"></div>
 
@@ -70,6 +71,7 @@
                      </button>
                   </form>
                </div>
+            </div>
                <div class="euiSpacer euiSpacer--m"></div>
                <div class="euiPanel euiPanel--paddingLarge">
                   <h2 class="euiTitle euiTitle--medium">Permissions</h2>

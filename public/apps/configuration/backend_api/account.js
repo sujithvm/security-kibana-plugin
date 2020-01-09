@@ -22,10 +22,10 @@ uiModules.get('apps/opendistro_security/configuration', [])
             return backendAPI.get(RESOURCE);
         }
 
-        this.save = (username, data) => {
+        this.save = (data) => {
             let dataToSave = cloneDeep(data);
             dataToSave = this.preSave(dataToSave);            
-            return backendAPI.save(RESOURCE, username, dataToSave, false);
+            return backendAPI.save(RESOURCE, dataToSave, false);
         };
 
         this.emptyModel = () => {

@@ -101,6 +101,29 @@ uiModules.get('apps/opendistro_security/configuration', [])
                 });
         };
 
+        this.save = (resourceName, data, showToastOnError = true) => {
+            let url = `${AUTH_BACKEND_API_ROOT}/configuration/${resourceName}`;
+            console.log("clientjs post url: " + url);
+            return $http.post(url, data)
+                .then((response) => {
+                    toastNotifications.addSuccess({
+                        title: `Resource saved.`
+                    });
+                })
+                .catch((error) => {
+                    console.log("error")
+                    console.log(error)
+                    if (error.status == 403) {
+                       // securityAccessControl.logout();
+                    } else if(showToastOnError) {
+                        toastNotifications.addDanger({
+                            text: error.data.message || error.statusText
+                        });
+                    }
+                    throw error;
+                });
+        };
+
         this.delete = (resourceName, id) => {
             return $http.delete(`${AUTH_BACKEND_API_ROOT}/configuration/${resourceName}/${id}`)
                 .then((response) => {

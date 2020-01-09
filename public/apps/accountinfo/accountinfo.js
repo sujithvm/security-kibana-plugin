@@ -102,7 +102,7 @@ app.controller('accountEditController', function ($scope, $element, $route, $loc
             return;
         }
      
-        $scope.service.save($scope.resourcename, $scope.resource)
+        $scope.service.save($scope.resource)
         .then(
           () => { securityAccessControl.logout() },
           (error) => {$scope.errorMessage = error.data.message}

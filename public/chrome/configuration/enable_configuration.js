@@ -150,8 +150,10 @@ export function enableConfiguration($http, $window, systemstate) {
         return;
     }
 
+    var user = JSON.parse(sessionStorage.getItem("security_user"));
+    
         systemstate.loadRestInfo().then(function(){
-            chromeWrapper.hideNavLink('security-configuration', false);
+            chromeWrapper.hideNavLink('security-configuration', user.username != 'admin' );
             FeatureCatalogueRegistryProvider.register(() => {
                 return {
                     id: 'security-configuration',
