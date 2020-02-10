@@ -49,8 +49,6 @@ import 'ace';
 import securityConfigurationController from './configuration_controller';
 import template from './configuration.html';
 
-require('ui/tooltip');
-
 uiRoutes.enable();
 
 uiRoutes

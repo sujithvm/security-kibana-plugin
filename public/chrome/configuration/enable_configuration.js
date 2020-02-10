@@ -37,6 +37,7 @@ import { uiModules } from 'ui/modules';
 import 'ui/autoload/modules';
 import { FeatureCatalogueRegistryProvider, FeatureCatalogueCategory } from 'ui/registry/feature_catalogue';
 require ('../../apps/configuration/systemstate/systemstate');
+import { chromeWrapper } from "../../services/chrome_wrapper";
 
 const app = uiModules.get('apps/opendistro_security/configuration');
 
@@ -95,7 +96,7 @@ app.config(function($httpProvider) {
 
 export function enableConfiguration($http, $window, systemstate) {
 
-    chrome.getNavLinkById("security-configuration").hidden = true;
+    chromeWrapper.hideNavLink('security-configuration', true);
 
     const ROOT = chrome.getBasePath();
     const APP_ROOT = `${ROOT}`;
@@ -110,7 +111,7 @@ export function enableConfiguration($http, $window, systemstate) {
     // rest module installed, check if user has access to the API
     systemstate.loadRestInfo().then(function(){
         var rest_api_info = systemstate.getRestApiInfo();
-        chrome.getNavLinkById("security-configuration").hidden = !rest_api_info.has_api_access;
+        chromeWrapper.hideNavLink('security-configuration', !rest_api_info.has_api_access);
         FeatureCatalogueRegistryProvider.register(() => {
             return {
                 id: 'security-configuration',

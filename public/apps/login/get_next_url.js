@@ -32,8 +32,7 @@
 import { parse } from 'url';
 
 export function getNextUrl(currentUrl, basePath = '') {
-    currentUrl = decodeURIComponent(currentUrl);
-
+   
     const {query, hash} = parse(currentUrl, true, true);
 
     // no nexturl in query, redirect to basepath

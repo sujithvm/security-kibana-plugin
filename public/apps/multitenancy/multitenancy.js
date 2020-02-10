@@ -34,11 +34,11 @@ import chrome from 'ui/chrome';
 import uiRoutes from 'ui/routes';
 import { uiModules } from 'ui/modules';
 import 'ui/autoload/styles';
-import { IndexPatternsGetProvider } from 'ui/index_patterns/_get';
 
 import 'plugins/opendistro_security/apps/configuration/configuration.less';
 
 import tenantTemplate from './multitenancy.html';
+import { chromeWrapper } from "../../services/chrome_wrapper";
 
 uiRoutes.enable();
 
@@ -52,7 +52,6 @@ uiRoutes
 uiModules
     .get('app/security-multitenancy')
     .controller('securityMultitenancyController', function ($http, $window, Private, security_resolvedInfo) {
-        const indexPatternsGetProvider = Private(IndexPatternsGetProvider)('id');
 
         var APP_ROOT = `${chrome.getBasePath()}`;
         var API_ROOT = `${APP_ROOT}/api/v1`;
@@ -203,11 +202,17 @@ uiModules
                     this.tenantLabel = "Active tenant: " + resolveTenantName(response.data, this.username);
                     this.currentTenant = response.data;
                     // clear lastUrls from nav links to avoid not found errors
-                    chrome.getNavLinkById("kibana:visualize").lastSubUrl = chrome.getNavLinkById("kibana:visualize").url;
-                    chrome.getNavLinkById("kibana:dashboard").lastSubUrl = chrome.getNavLinkById("kibana:dashboard").url;
-                    chrome.getNavLinkById("kibana:discover").lastSubUrl = chrome.getNavLinkById("kibana:discover").url;
+                    
+                    // clear lastUrls from nav links to avoid not found errors
+                    const appsToReset = ['kibana:visualize', 'kibana:dashboard', 'kibana:discover', 'timelion'];
+                    chromeWrapper.getNavLinks().forEach((navLink) => {
+                        if (appsToReset.indexOf(navLink.id) > -1) {
+                            chromeWrapper.resetLastSubUrl(navLink.id);
+                        }
+                    });  
+
                     if(chrome.getInjected("timelion.ui.enabled")) {
-                        chrome.getNavLinkById("timelion").lastSubUrl = chrome.getNavLinkById("timelion").url;
+                        chromeWrapper.getNavLinkById("timelion").lastSubUrl = chromeWrapper.getNavLinkById("timelion").url;
                     }
                     // clear last sub urls, but leave our own items intouched. Take safe mutation approach.
                     var lastSubUrls = [];
@@ -226,10 +231,10 @@ uiModules
                     // redirect to either Visualize or Dashboard depending on user selection.
                     if(redirect) {
                         if (redirect == 'vis') {
-                            $window.location.href = chrome.getNavLinkById("kibana:visualize").url;
+                            $window.location.href = chromeWrapper.getNavLinkById("kibana:visualize").url;
                         }
                         if (redirect == 'dash') {
-                            $window.location.href = chrome.getNavLinkById("kibana:dashboard").url;
+                            $window.location.href = chromeWrapper.getNavLinkById("kibana:dashboard").url;
                         }
                     } else {
                         toastNotifications.addSuccess({

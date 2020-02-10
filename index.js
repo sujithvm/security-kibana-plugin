@@ -4,6 +4,7 @@ import { has } from 'lodash';
 import indexTemplate from './lib/elasticsearch/setup_index_template';
 import { migrateTenants } from './lib/multitenancy/migrate_tenants';
 import { version as opendistro_security_version } from './package.json';
+import { first } from 'rxjs/operators';
 
 export default function (kibana) {
 
@@ -153,9 +154,15 @@ export default function (kibana) {
                 let userInfo = null;
 
                 try {
+
+                    server.log(['info', 'OpenDistro Security Index'], "replaceInjectedVars ");
+
                     // If the user is authenticated, just get the regular values
                     if(request.auth.securitySessionStorage.isAuthenticated()) {
                         let sessionCredentials = request.auth.securitySessionStorage.getSessionCredentials();
+
+                        server.log(['info', 'OpenDistro Security Index'], "replaceInjectedVars auth");
+
                         userInfo = {
                             username: sessionCredentials.username,
                             isAnonymousAuth: sessionCredentials.isAnonymousAuth
@@ -167,6 +174,9 @@ export default function (kibana) {
                             userInfo = {
                                 username: authInfo.user_name
                             };
+
+                            server.log(['info', 'OpenDistro Security Index'], "replaceInjectedVars unauth");
+
                         } catch(error) {
                             // Not authenticated, so don't do anything
                         }
@@ -175,6 +185,9 @@ export default function (kibana) {
                     if (userInfo) {
                         securityDynamic.user = userInfo;
                     }
+
+                    server.log(['info', 'OpenDistro Security Index'], "replaceInjectedVars userInfo " + JSON.stringify(userInfo));
+
                 } catch (error) {
                     // Don't to anything here.
                     // If there's an error, it's probably because x-pack security is enabled.
@@ -204,6 +217,9 @@ export default function (kibana) {
                         currentTenant: currentTenant
                     };
                 }
+
+                const legacyEsConfig = await server.newPlatform.setup.core.elasticsearch.legacy.config$.pipe(first()).toPromise();
+                originalInjectedVars.kibana_server_user = legacyEsConfig.username;
 
                 return {
                     ...originalInjectedVars,
@@ -267,7 +283,6 @@ export default function (kibana) {
                 options.accountinfo_enabled = server.config().get('opendistro_security.accountinfo.enabled');
                 options.basicauth_enabled = server.config().get('opendistro_security.basicauth.enabled');
                 options.kibana_index = server.config().get('kibana.index');
-                options.kibana_server_user = server.config().get('elasticsearch.username');
                 options.opendistro_security_version = opendistro_security_version;
 
                 return options;
@@ -276,7 +291,7 @@ export default function (kibana) {
         },
 
         async init(server, options) {
-
+            const legacyEsConfig = await server.newPlatform.setup.core.elasticsearch.legacy.config$.pipe(first()).toPromise();
             APP_ROOT = '';
             API_ROOT = `${APP_ROOT}/api/v1`;
             const config = server.config();
@@ -305,15 +320,19 @@ export default function (kibana) {
 
             // provides authentication methods against Security
             const BackendClass = pluginRoot(`lib/backend/opendistro_security`);
-            const securityBackend = new BackendClass(server, server.config);
+            const securityBackend = new BackendClass(server, server.config, legacyEsConfig);
             server.expose('getSecurityBackend', () => securityBackend);
 
             // provides configuration methods against Security
             const ConfigurationBackendClass = pluginRoot(`lib/configuration/backend/opendistro_security_configuration_backend`);
-            const securityConfigurationBackend = new ConfigurationBackendClass(server, server.config);
+            const securityConfigurationBackend = new ConfigurationBackendClass(server, server.config, legacyEsConfig);
             server.expose('getSecurityConfigurationBackend', () => securityConfigurationBackend);
 
             let authType = config.get('opendistro_security.auth.type');
+
+            server.log(['info', 'OpenDistro Security index'], "Index authtype initial " + authType);
+            server.log(['info', 'OpenDistro Security index config'], "Index authtype config " + config.get('opendistro_security.basicauth.enabled'));
+
             let authClass = null;
 
             // For legacy code
@@ -346,7 +365,7 @@ export default function (kibana) {
 
             server.state('security_storage', storageCookieConf);
 
-
+            server.log(['info', 'OpenDistro Security index'], "Index authtype " + authType);
             if (authType && authType !== '' && ['basicauth', 'jwt', 'openid', 'saml', 'proxycache'].indexOf(authType) > -1) {
                 try {
                     await server.register({
@@ -384,6 +403,7 @@ export default function (kibana) {
                     if (authClass) {
                         try {
                             // At the moment this is mainly to catch an error where the openid connect_url is wrong
+                            server.log(['info', 'OpenDistro Security index'], "Index init ");
                             await authClass.init();
                         } catch (error) {
                             this.status.red('An error occurred during initialisation, please check the logs.');
@@ -417,7 +437,7 @@ export default function (kibana) {
             if (config.get('opendistro_security.multitenancy.enabled')) {
 
                 // sanity check - header whitelisted?
-                var headersWhitelist = config.get('elasticsearch.requestHeadersWhitelist');
+                var headersWhitelist = legacyEsConfig.requestHeadersWhitelist;
                 if (headersWhitelist.indexOf('securitytenant') == -1) {
                     this.status.red('No tenant header found in whitelist. Please add securitytenant to elasticsearch.requestHeadersWhitelist in kibana.yml');
                     return;
@@ -487,7 +507,7 @@ export default function (kibana) {
             }
 
             // Using an admin certificate may lead to unintended consequences
-            if ((typeof config.get('elasticsearch.ssl.certificate') !== 'undefined' && typeof config.get('elasticsearch.ssl.certificate') !== false) && config.get('opendistro_security.allow_client_certificates') !== true) {
+            if ((typeof legacyEsConfig.ssl.certificate !== 'undefined' && typeof legacyEsConfig.ssl.certificate !== false) && config.get('opendistro_security.allow_client_certificates') !== true) {
                 this.status.red("'elasticsearch.ssl.certificate' can not be used without setting 'opendistro_security.allow_client_certificates' to 'true' in kibana.yml. Please refer to the documentation for more information about the implications of doing so.");
             }
         }
