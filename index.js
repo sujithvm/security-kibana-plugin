@@ -281,10 +281,15 @@ export default function (kibana) {
         },
 
         async init(server, options) {
-	    const legacyEsConfig = await server.newPlatform.setup.core.elasticsearch.legacy.config$.pipe(first()).toPromise();
+	        const legacyEsConfig = await server.newPlatform.setup.core.elasticsearch.legacy.config$.pipe(first()).toPromise();
+
+            server.log(['info', '***** opendistro-security'], "file:index func:init state:start");
+
             APP_ROOT = '';
             API_ROOT = `${APP_ROOT}/api/v1`;
             const config = server.config();
+
+            server.log(['info', '***** opendistro-security'], "file:index func:init obj:config " +  JSON.stringify(config));
 
             // If X-Pack is installed it needs to be disabled for Security to run.
             try {
@@ -321,6 +326,8 @@ export default function (kibana) {
             let authType = config.get('opendistro_security.auth.type');
             let authClass = null;
 
+            server.log(['info', '***** opendistro-security'], "file:index func:init obj:authType " +  authType);
+
             // For legacy code
             if (! authType) {
                 if (config.get('opendistro_security.basicauth.enabled')) {
@@ -334,6 +341,8 @@ export default function (kibana) {
                     config.set('opendistro_security.auth.type', authType);
                 }
             }
+
+            server.log(['info', '***** opendistro-security'], "file:index func:init obj:authType " +  authType);
 
             // Set up the storage cookie
             let storageCookieConf = {
@@ -351,6 +360,7 @@ export default function (kibana) {
 
             server.state('security_storage', storageCookieConf);
 
+            server.log(['info', '***** opendistro-security'], "file:index func:init obj:storageCookieConf " +  JSON.stringify(storageCookieConf));
 
             if (authType && authType !== '' && ['basicauth', 'jwt', 'openid', 'saml', 'proxycache'].indexOf(authType) > -1) {
                 try {
@@ -389,6 +399,7 @@ export default function (kibana) {
                     if (authClass) {
                         try {
                             // At the moment this is mainly to catch an error where the openid connect_url is wrong
+                            server.log(['info', '***** opendistro-security'], "file:index func:init state:authClass.init()");
                             await authClass.init();
                         } catch (error) {
                             this.status.red('An error occurred during initialisation, please check the logs.');
@@ -407,6 +418,8 @@ export default function (kibana) {
             } else {
                 // @todo await/async
                 // Register the storage plugin for the other auth types
+                server.log(['info', '***** opendistro-security'], "file:index func:init state:sessionPlugin register");
+
                 server.register({
                     plugin: pluginRoot('lib/session/sessionPlugin'),
                     options: {
@@ -449,6 +462,7 @@ export default function (kibana) {
 
                 server.state('security_preferences', preferenceCookieConf);
 
+                server.log(['info', '***** opendistro-security'], "file:index func:init obj:preferenceCookieConf " +  JSON.stringify(preferenceCookieConf));
 
                 this.status.yellow("Security multitenancy registered.");
             } else {
