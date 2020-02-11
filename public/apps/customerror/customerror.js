@@ -37,7 +37,9 @@ import 'ui/autoload/styles';
 import 'plugins/opendistro_security/apps/customerror/customerror.less';
 import PageController from './page_controller';
 
+import template from 'plugins/opendistro_security/apps/customerror/customerror.html';
+
 chrome
 .setVisible(false)
-.setRootTemplate(require('plugins/opendistro_security/apps/customerror/customerror.html'))
+.setRootTemplate(template)
 .setRootController('ui', PageController);
