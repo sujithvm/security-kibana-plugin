@@ -22,10 +22,14 @@ jobs:
       run: |
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash
         export NVM_HOME="$HOME/.nvm"
-        ./build.sh test
+        ./build.sh
+        artifact_path=`ls $(pwd)/plugins/opendistro_security-*.zip`
+        artifact_name=`basename $artifact_path`
+        echo ::set-env name=ARTIFACT_PATH::$artifact_path
+        echo ::set-env name=ARTIFACT_NAME::$artifact_name
     
     - name: Upload Workflow Artifacts
       uses: actions/upload-artifact@v1
       with:
-        name: artifacts
-        path: plugins/
+        name: ${{ env.ARTIFACT_NAME }}
+        path: ${{ env.ARTIFACT_PATH }}
