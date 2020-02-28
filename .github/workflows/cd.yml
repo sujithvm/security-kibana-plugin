@@ -19,7 +19,10 @@ jobs:
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash
         export NVM_HOME="$HOME/.nvm"
         ./build.sh skipTests
-        echo ::set-env name=PLUGIN_NAME::opendistro_security-${GITHUB_REF/refs\/tags\//}.zip
+        artifact_path=`ls $(pwd)/plugins/opendistro_security-*.zip`
+        artifact_name=`basename $artifact_path`
+        echo ::set-env name=ARTIFACT_PATH::$artifact_path
+        echo ::set-env name=ARTIFACT_NAME::$artifact_name
         echo ::set-env name=TAG_VERSION::${GITHUB_REF/refs\/tags\//}
 
     - name: Configure AWS Credentials
@@ -52,12 +55,12 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_name: ${{ env.PLUGIN_NAME }}
-        asset_path: plugins/${{ env.PLUGIN_NAME }}
+        asset_name: ${{ env.ARTIFACT_NAME }}
+        asset_path: ${{ env.ARTIFACT_PATH }}
         asset_content_type: application/zip
 
     - name: Upload Workflow Artifacts
       uses: actions/upload-artifact@v1
       with:
-        name: ${{ env.PLUGIN_NAME }}
-        path: plugins/
+        name: ${{ env.ARTIFACT_NAME }}
+        path: ${{ env.ARTIFACT_PATH }}
