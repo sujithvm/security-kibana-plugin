@@ -19,8 +19,7 @@ jobs:
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash
         export NVM_HOME="$HOME/.nvm"
         ./build.sh skipTests
-        mkdir artifacts
-        cp plugins/*.zip artifacts/
+        echo ::set-env name=PLUGIN_NAME::opendistro_security-${GITHUB_REF/refs\/tags\//}.zip
         echo ::set-env name=TAG_VERSION::${GITHUB_REF/refs\/tags\//}
 
     - name: Configure AWS Credentials
@@ -33,7 +32,7 @@ jobs:
     - name: Upload Artifacts to S3
       run: |
         s3_path=s3://open-distro-artifacts/downloads
-        aws s3 cp artifacts/*.zip $s3_path/kibana-plugins/opendistro-security/
+        aws s3 cp plugins/*.zip $s3_path/kibana-plugins/opendistro-security/
 
     - name: Create Github Draft Release
       id: create_release
@@ -53,12 +52,12 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_name: artifacts.zip
-        asset_path: artifacts.zip
+        asset_name: ${{ env.PLUGIN_NAME }}
+        asset_path: plugins/${{ env.PLUGIN_NAME }}
         asset_content_type: application/zip
 
     - name: Upload Workflow Artifacts
       uses: actions/upload-artifact@v1
       with:
-        name: artifacts
-        path: artifacts/
+        name: ${{ env.PLUGIN_NAME }}
+        path: plugins/
