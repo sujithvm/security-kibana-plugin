@@ -5,13 +5,6 @@ if ! [ -x "$(command -v jq)" ]; then
   exit 1
 fi
 
-echo "+++ Checking Maven version +++"
-mvn -version
-if [ $? != 0 ]; then
-    echo "Checking maven version failed";
-    exit 1
-fi
-
 KIBANA_VERSION=$(cat package.json | jq -r ".kibana.version")
 echo "+++ Building for kibana version $KIBANA_VERSION +++"
 
@@ -28,6 +21,13 @@ echo "+++ Checking nvm version +++"
 nvm version
 if [ $? != 0 ]; then
     echo "Checking nvm version failed"
+    exit 1
+fi
+
+echo "+++ Checking Maven version +++"
+mvn -version
+if [ $? != 0 ]; then
+    echo "Checking maven version failed";
     exit 1
 fi
 
