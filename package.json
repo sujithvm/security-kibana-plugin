@@ -46,7 +46,8 @@
     "requirefrom": "^0.2.0",
     "typescript": "^3.5.1",
     "uuid": "^3.3.2",
-    "wreck": "14.x.x"
+    "wreck": "14.x.x",
+    "@kbn/i18n": "link:../../packages/kbn-i18n"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
@@ -69,8 +70,13 @@
     "eslint-plugin-react": "^7.11.1",
     "husky": "^2.3.0",
     "jest": "^24.8.0",
+    "@kbn/plugin-helpers": "link:../../packages/kbn-plugin-helpers",
     "lint-staged": "^8.1.6",
     "ts-loader": "^6.2.1",
-    "ui-select": "^0.19.8"
+    "ui-select": "^0.19.8",
+
+    "@elastic/eslint-config-kibana": "link:../../packages/eslint-config-kibana",
+    "@elastic/eslint-import-resolver-kibana": "link:../../packages/kbn-eslint-import-resolver-kibana",
+    "@kbn/expect": "link:../../packages/kbn-expect"
   }
 }

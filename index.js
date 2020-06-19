@@ -262,6 +262,11 @@ export default function (kibana) {
                     icon: 'plugins/opendistro_security/assets/opendistro_security.svg',
                     linkToLastSubUrl: false,
                     url: '/app/security-configuration#/'
+                },
+                {
+                    title: 'Audit',
+                    description: 'Audit logging',
+                    main: 'plugins/opendistro_security/app'
                 }
             ],
             styleSheetPaths: require('path').resolve(__dirname, 'public/app.css'),
