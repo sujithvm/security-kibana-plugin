@@ -264,9 +264,12 @@ export default function (kibana) {
                     url: '/app/security-configuration#/'
                 },
                 {
+                    id: 'security-audit',
                     title: 'Audit',
                     description: 'Audit logging',
-                    main: 'plugins/opendistro_security/app'
+                    main: 'plugins/opendistro_security/apps/audit/app',
+                    linkToLastSubUrl: false,
+                    url: '/app/security-audit#/'
                 }
             ],
             styleSheetPaths: require('path').resolve(__dirname, 'public/app.css'),
