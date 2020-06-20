@@ -82,111 +82,7 @@ export class Main extends React.Component {
           <h3>{title}</h3>
         </EuiText>
         <EuiSpacer size="m" />
-        <EuiFlexGrid columns={3}>
-          {settings}
-        </EuiFlexGrid>
-      </>
-    );
-  };
-
-  displayLayerSettings = () => {
-    return (
-      <>
-        <EuiText size="s">
-          <h3>{AUDIT_UI_LABELS.LAYER_SETTINGS}</h3>
-        </EuiText>
-        <EuiSpacer size="m" />
-        <EuiFlexGrid columns={3}>
-          {this.displayBooleanFlexItem(AUDIT_UI_LABELS.REST_LAYER, true)}
-          {this.displayArrayFlexItem(AUDIT_UI_LABELS.REST_DISABLED_CATEGORIES, [
-            'GRANTED PRIVILEGES',
-            'AUTHENTICATED',
-          ])}
-          {this.displayBooleanFlexItem(AUDIT_UI_LABELS.TRANSPORT_LAYER, true)}
-          {this.displayArrayFlexItem(AUDIT_UI_LABELS.TRANSPORT_DISABLED_CATEGORIES, [
-            'FAILED_LOGIN',
-          ])}
-        </EuiFlexGrid>
-      </>
-    );
-  };
-
-  displayAttributeSettings = () => {
-    return (
-      <>
-        <EuiText size="s">
-          <h3>{AUDIT_UI_LABELS.ATTRIBUTE_SETTINGS}</h3>
-        </EuiText>
-        <EuiSpacer size="m" />
-        <EuiFlexGrid columns={3}>
-          {this.displayBooleanFlexItem(AUDIT_UI_LABELS.BULK_REQUESTS, true)}
-          {this.displayBooleanFlexItem(AUDIT_UI_LABELS.RESOLVE_INDICES, false)}
-          {this.displayBooleanFlexItem(AUDIT_UI_LABELS.RESOLVE_INDICES, true)}
-          {this.displayBooleanFlexItem(AUDIT_UI_LABELS.SENSITIVE_HEADERS, false)}
-        </EuiFlexGrid>
-      </>
-    );
-  };
-
-  displayIgnoreSettings = () => {
-    return (
-      <>
-        <EuiText size="s">
-          <h3>{AUDIT_UI_LABELS.IGNORE_SETTINGS}</h3>
-        </EuiText>
-        <EuiSpacer size="m" />
-        <EuiFlexGrid columns={3}>
-          {this.displayArrayFlexItem(AUDIT_UI_LABELS.EXCLUDE_USERS, [
-            'kibanaserver',
-            'sujith',
-            'kvngar',
-          ])}
-          {this.displayArrayFlexItem(AUDIT_UI_LABELS.EXCLUDE_REQUESTS, [
-            'indices:data/read/*',
-            'indices:settings/read*',
-          ])}
-        </EuiFlexGrid>
-      </>
-    );
-  };
-
-  displayComplianceReadSettings = () => {
-    return (
-      <>
-        <EuiText size="s">
-          <h3>{AUDIT_UI_LABELS.COMPLIANCE_READ}</h3>
-        </EuiText>
-        <EuiSpacer size="m" />
-        <EuiFlexGrid columns={3}>
-          {this.displayBooleanFlexItem(AUDIT_UI_LABELS.COMPLIANCE_READ_METADATA_ONLY, true)}
-          {this.displayArrayFlexItem(AUDIT_UI_LABELS.COMPLIANCE_READ_IGNORED_USERS, [
-            'kibanaserver',
-            'sujith',
-            'kvngar',
-          ])}
-          {this.displayArrayFlexItem(AUDIT_UI_LABELS.COMPLIANCE_READ_WATCHED_FIELDS, [])}
-        </EuiFlexGrid>
-      </>
-    );
-  };
-
-  displayComplianceWriteSettings = () => {
-    return (
-      <>
-        <EuiText size="s">
-          <h3>{AUDIT_UI_LABELS.COMPLIANCE_WRITE}</h3>
-        </EuiText>
-        <EuiSpacer size="m" />
-        <EuiFlexGrid columns={3}>
-          {this.displayBooleanFlexItem(AUDIT_UI_LABELS.COMPLIANCE_WRITE_METADATA_ONLY, true)}
-          {this.displayBooleanFlexItem(AUDIT_UI_LABELS.COMPLIANCE_WRITE_LOG_DIFFS, true)}
-          {this.displayArrayFlexItem(AUDIT_UI_LABELS.COMPLIANCE_WRITE_IGNORED_USERS, [
-            'kibanaserver',
-            'sujith',
-            'kvngar',
-          ])}
-          {this.displayArrayFlexItem(AUDIT_UI_LABELS.COMPLIANCE_WRITE_WATCHED_INDICES, [])}
-        </EuiFlexGrid>
+        <EuiFlexGrid columns={3}>{settings}</EuiFlexGrid>
       </>
     );
   };
@@ -226,13 +122,36 @@ export class Main extends React.Component {
                 </EuiFlexItem>
               </EuiFlexGroup>
               <EuiHorizontalRule />
-              {this.displayLayerSettings()}
+              {this.displayFlexGrid(AUDIT_UI_LABELS.LAYER_SETTINGS, [
+                this.displayBooleanFlexItem(AUDIT_UI_LABELS.REST_LAYER, true),
+                this.displayArrayFlexItem(AUDIT_UI_LABELS.REST_DISABLED_CATEGORIES, [
+                  'GRANTED PRIVILEGES',
+                  'AUTHENTICATED',
+                ]),
+                this.displayBooleanFlexItem(AUDIT_UI_LABELS.TRANSPORT_LAYER, true),
+                this.displayArrayFlexItem(AUDIT_UI_LABELS.TRANSPORT_DISABLED_CATEGORIES, [
+                  'FAILED_LOGIN',
+                ]),
+              ])}
               <EuiSpacer size="xl" />
-              {this.displayAttributeSettings()}
+              {this.displayFlexGrid(AUDIT_UI_LABELS.ATTRIBUTE_SETTINGS, [
+                this.displayBooleanFlexItem(AUDIT_UI_LABELS.BULK_REQUESTS, true),
+                this.displayBooleanFlexItem(AUDIT_UI_LABELS.RESOLVE_INDICES, false),
+                this.displayBooleanFlexItem(AUDIT_UI_LABELS.RESOLVE_INDICES, true),
+                this.displayBooleanFlexItem(AUDIT_UI_LABELS.SENSITIVE_HEADERS, false),
+              ])}
               <EuiSpacer size="xl" />
-              {this.displayIgnoreSettings()}
-              <EuiSpacer size="xl" />
-            
+              {this.displayFlexGrid(AUDIT_UI_LABELS.IGNORE_SETTINGS, [
+                this.displayArrayFlexItem(AUDIT_UI_LABELS.EXCLUDE_USERS, [
+                  'kibanaserver',
+                  'sujith',
+                  'kvngar',
+                ]),
+                this.displayArrayFlexItem(AUDIT_UI_LABELS.EXCLUDE_REQUESTS, [
+                  'indices:data/read/*',
+                  'indices:settings/read*',
+                ]),
+              ])}
             </EuiPanel>
 
             <EuiSpacer />
@@ -249,9 +168,30 @@ export class Main extends React.Component {
                 </EuiFlexItem>
               </EuiFlexGroup>
               <EuiHorizontalRule />
-              <EuiPanel>{this.displayComplianceReadSettings()}</EuiPanel>
-              <EuiSpacer size="xl" />
-              <EuiPanel>{this.displayComplianceWriteSettings()}</EuiPanel>
+              <EuiPanel>
+                {this.displayFlexGrid(AUDIT_UI_LABELS.COMPLIANCE_READ, [
+                  this.displayBooleanFlexItem(AUDIT_UI_LABELS.COMPLIANCE_READ_METADATA_ONLY, true),
+                  this.displayArrayFlexItem(AUDIT_UI_LABELS.COMPLIANCE_READ_IGNORED_USERS, [
+                    'kibanaserver',
+                    'sujith',
+                    'kvngar',
+                  ]),
+                  this.displayArrayFlexItem(AUDIT_UI_LABELS.COMPLIANCE_READ_WATCHED_FIELDS, []),
+                ])}
+              </EuiPanel>
+              <EuiSpacer/>
+              <EuiPanel>
+                {this.displayFlexGrid(AUDIT_UI_LABELS.COMPLIANCE_WRITE, [
+                  this.displayBooleanFlexItem(AUDIT_UI_LABELS.COMPLIANCE_WRITE_METADATA_ONLY, true),
+                  this.displayBooleanFlexItem(AUDIT_UI_LABELS.COMPLIANCE_WRITE_LOG_DIFFS, true),
+                  this.displayArrayFlexItem(AUDIT_UI_LABELS.COMPLIANCE_WRITE_IGNORED_USERS, [
+                    'kibanaserver',
+                    'sujith',
+                    'kvngar',
+                  ]),
+                  this.displayArrayFlexItem(AUDIT_UI_LABELS.COMPLIANCE_WRITE_WATCHED_INDICES, []),
+                ])}
+              </EuiPanel>
             </EuiPanel>
           </EuiPageBody>
         </EuiPage>
