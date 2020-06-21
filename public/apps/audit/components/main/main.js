@@ -14,7 +14,7 @@ import {
   EuiHorizontalRule,
   EuiFlexGrid,
 } from '@elastic/eui';
-import { AUDIT_LABELS, CONFIG } from './config'
+import { AUDIT_LABELS, CONFIG } from './config';
 import { get } from 'lodash';
 
 export class Main extends React.Component {
@@ -61,7 +61,7 @@ export class Main extends React.Component {
     }
   };
 
-  displayConfig = (setting) => {
+  displayConfig = setting => {
     return (
       <Fragment key={setting.key}>
         <EuiFlexItem>
@@ -76,11 +76,11 @@ export class Main extends React.Component {
         </EuiFlexItem>
       </Fragment>
     );
-  }
+  };
 
   displayConfigs = (title, settings) => {
     const configs = settings.map(setting => {
-      return this.displayConfig(setting)
+      return this.displayConfig(setting);
     });
     return (
       <>
@@ -102,14 +102,12 @@ export class Main extends React.Component {
             <EuiPanel paddingSize="none">
               <div style={{ padding: 24, paddingBottom: 16 }}>
                 <EuiTitle>
-                  <h2>Audit Logging</h2>
+                  <h2>{AUDIT_LABELS.AUDIT_LOGGING}</h2>
                 </EuiTitle>
               </div>
               <EuiHorizontalRule margin="xs" />
             </EuiPanel>
-
             <EuiSpacer />
-
             <EuiPanel paddingSize="none">
               <div style={{ padding: 24, paddingBottom: 16 }}>
                 <EuiFlexGroup>
@@ -145,15 +143,13 @@ export class Main extends React.Component {
                 ])}
               </div>
             </EuiPanel>
-
             <EuiSpacer />
-
             <EuiPanel paddingSize="none">
               <div style={{ padding: 24, paddingBottom: 16 }}>
                 <EuiFlexGroup>
                   <EuiFlexItem>
                     <EuiTitle>
-                      <h3>Compliance settings</h3>
+                      <h3>{AUDIT_LABELS.COMPLIANCE_SETTINGS}</h3>
                     </EuiTitle>
                   </EuiFlexItem>
                   <EuiFlexItem grow={false}>
@@ -166,20 +162,20 @@ export class Main extends React.Component {
                 {this.displayConfig(CONFIG.COMPLIANCE.ENABLED)}
                 <EuiSpacer />
                 <EuiPanel>
-                {this.displayConfigs(AUDIT_LABELS.COMPLIANCE_READ, [
-                  CONFIG.COMPLIANCE.READ_METADATA_ONLY,
-                  CONFIG.COMPLIANCE.READ_IGNORED_USERS,
-                  CONFIG.COMPLIANCE.READ_WATCHED_FIELDS,
-                ])}
+                  {this.displayConfigs(AUDIT_LABELS.COMPLIANCE_READ, [
+                    CONFIG.COMPLIANCE.READ_METADATA_ONLY,
+                    CONFIG.COMPLIANCE.READ_IGNORED_USERS,
+                    CONFIG.COMPLIANCE.READ_WATCHED_FIELDS,
+                  ])}
                 </EuiPanel>
                 <EuiSpacer />
                 <EuiPanel>
-                {this.displayConfigs(AUDIT_LABELS.COMPLIANCE_WRITE, [
-                  CONFIG.COMPLIANCE.WRITE_METADATA_ONLY,
-                  CONFIG.COMPLIANCE.WRITE_LOG_DIFFS,
-                  CONFIG.COMPLIANCE.WRITE_IGNORED_USERS,
-                  CONFIG.COMPLIANCE.WRITE_WATCHED_FIELDS,
-                ])}
+                  {this.displayConfigs(AUDIT_LABELS.COMPLIANCE_WRITE, [
+                    CONFIG.COMPLIANCE.WRITE_METADATA_ONLY,
+                    CONFIG.COMPLIANCE.WRITE_LOG_DIFFS,
+                    CONFIG.COMPLIANCE.WRITE_IGNORED_USERS,
+                    CONFIG.COMPLIANCE.WRITE_WATCHED_FIELDS,
+                  ])}
                 </EuiPanel>
               </div>
             </EuiPanel>

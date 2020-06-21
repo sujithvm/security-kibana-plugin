@@ -1,4 +1,6 @@
 export const AUDIT_LABELS = {
+  AUDIT_LOGGING: 'Audit logging',
+  GENERAL_SETTINGS: 'General settings',
   LAYER_SETTINGS: 'Layer settings',
   ATTRIBUTE_SETTINGS: 'Attribute settings',
   IGNORE_SETTINGS: 'Ignore settings',
