@@ -14,141 +14,81 @@ import {
   EuiHorizontalRule,
   EuiFlexGrid,
 } from '@elastic/eui';
-
-const AUDIT_UI_SETTINGS = {
-  LAYER_SETTINGS: 'Layer settings',
-  REST_LAYER: 'REST layer',
-  REST_DISABLED_CATEGORIES: 'REST disabled categories',
-  TRANSPORT_LAYER: 'Transport layer',
-  TRANSPORT_DISABLED_CATEGORIES: 'Transport disabled categories',
-  ATTRIBUTE_SETTINGS: 'Attribute settings',
-  BULK_REQUESTS: 'Bulk requests',
-  REQUEST_BODY: 'Request body',
-  RESOLVE_INDICES: 'Resolve indices',
-  SENSITIVE_HEADERS: 'Sensitive headers',
-  IGNORE_SETTINGS: 'Ignore settings',
-  EXCLUDE_USERS: 'Exclude users',
-  EXCLUDE_REQUESTS: 'Exclude requests',
-  COMPLIANCE_SETTINGS: 'Compliance settings',
-  COMPLIANCE_MODE: 'Compliance mode',
-  COMPLIANCE_READ: 'Read',
-  COMPLIANCE_READ_METADATA_ONLY: 'Read metadata only',
-  COMPLIANCE_READ_IGNORED_USERS: 'Ignored users',
-  COMPLIANCE_READ_WATCHED_FIELDS: 'Watched fields',
-  COMPLIANCE_WRITE: 'Write',
-  COMPLIANCE_WRITE_METADATA_ONLY: 'Write metadata only',
-  COMPLIANCE_WRITE_LOG_DIFFS: 'Log diffs',
-  COMPLIANCE_WRITE_IGNORED_USERS: 'Ignored users',
-  COMPLIANCE_WRITE_WATCHED_INDICES: 'Watched indices',
-};
-
-
-const CONFIG = {
-  REST_LAYER: {
-    title: "REST layer",
-    label: "config:audit:enable_rest",
-    description: "Enable or disable auditing events that happen on the REST layer",
-    type: "bool"
-  },
-  REST_DISABLED_CATEGORIES: {
-    title: "REST disabled categories",
-    label: "config:audit:disabled_rest_categories",
-    description: "Specify audit categories which must be ignored on the REST layer",
-    type: "array",
-    options: ["BAD_HEADERS", "FAILED_LOGIN", "MISSING_PRIVILEGES", "GRANTED_PRIVILEGES", "SSL_EXCEPTION", "AUTHENTICATED"]
-  },
-  TRANSPORT_LAYER: {
-    title: "Transport layer",
-    label: "config:audit:enable_transport",
-    description: "Enable or disable auditing events that happen on the Transport layer",
-    type: "bool"
-  },
-  TRANSPORT_DISABLED_CATEGORIES: {
-    title: "Transport disabled categories",
-    label: "config:audit:disabled_transport_categories",
-    description: "Specify audit categories which must be ignored on the Transport layer",
-    type: "array",
-    options: ["BAD_HEADERS", "FAILED_LOGIN", "MISSING_PRIVILEGES", "GRANTED_PRIVILEGES", "SSL_EXCEPTION", "AUTHENTICATED"]
-  },
-  BULK_REQUESTS: {
-    title: "Bulk requests",
-    label: "config:audit:resolve_bulk_requests",
-    description: "Resolve bulk requests during auditing of requests.",
-    type: "bool"
-  },
-  REQUEST_BODY: {
-    title: "Bulk requests",
-    label: "config:audit:log_request_body",
-    description: "Include request body during auditing of requests.",
-    type: "bool"
-  },
-  RESOLVE_INDICES: {
-    title: "Bulk requests",
-    label: "config:audit:resolve_bulk_requests",
-    description: "Resolve bulk requests during auditing of requests.",
-    type: "bool"
-  },
-  IGNORED_USERS: {
-    title: "Sensitive header",
-    label: "config:audit:exclude_sensitive_headers",
-    description: "Users to ignore during auditing.",
-    type: "array"
-  },
-  IGNORED_REQUESTS: {
-    title: "Transport disabled categories",
-    label: "config:audit:disabled_transport_categories",
-    description: "Request patterns to ignore during auditing.",
-    type: "array"
-  }
-}
+import { AUDIT_LABELS, CONFIG } from './config'
+import { get } from 'lodash';
 
 export class Main extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      config: {
+        enabled: true,
+        audit: {
+          enable_rest: true,
+          disabled_rest_categories: ['GRANTED_PRIVILEGES', 'SSL_EXCEPTION', 'AUTHENTICATED'],
+          enable_transport: true,
+          disabled_transport_categories: ['GRANTED_PRIVILEGES', 'AUTHENTICATED'],
+          resolve_bulk_requests: false,
+          log_request_body: true,
+          resolve_indices: true,
+          exclude_sensitive_headers: true,
+          ignore_users: ['kibanaserver'],
+          ignore_requests: [],
+        },
+        compliance: {
+          enabled: true,
+          internal_config: true,
+          external_config: false,
+          read_metadata_only: true,
+          read_watched_fields: {},
+          read_ignore_users: ['kibanaserver'],
+          write_metadata_only: true,
+          write_log_diffs: false,
+          write_watched_indices: [],
+          write_ignore_users: ['kibanaserver'],
+        },
+      },
+    };
   }
 
-  displayBooleanFlexItem = (title, val) => {
+  displayType = (setting, val) => {
+    if (setting.type === 'bool') return val ? 'Enabled' : 'Disabled';
+    else if (setting.type === 'array') {
+      return val && val.length != 0 ? val.join(' , ') : '--';
+    } else {
+      return 'Unknown type';
+    }
+  };
+
+  displayConfig = (setting) => {
     return (
-      <>
+      <Fragment key={setting.key}>
         <EuiFlexItem>
           <EuiText size="s">
-            <h5>{title}</h5>
+            <h5>{setting.title}</h5>
             <p>
               <EuiTextColor color="subdued">
-                <small>{val ? 'Enabled' : 'Disabled'}</small>
+                <small>{this.displayType(setting, get(this.state.config, setting.path))}</small>
               </EuiTextColor>
             </p>
           </EuiText>
         </EuiFlexItem>
-      </>
+      </Fragment>
     );
-  };
+  }
 
-  displayArrayFlexItem = (title, val) => {
-    return (
-      <>
-        <EuiFlexItem>
-          <EuiText size="s">
-            <h5>{title}</h5>
-            <p>
-              <EuiTextColor color="subdued">
-                <small>{val && val.length != 0 ? val.join(' , ') : '--'}</small>
-              </EuiTextColor>
-            </p>
-          </EuiText>
-        </EuiFlexItem>
-      </>
-    );
-  };
-
-  displayFlexGrid = (title, settings) => {
+  displayConfigs = (title, settings) => {
+    const configs = settings.map(setting => {
+      return this.displayConfig(setting)
+    });
     return (
       <>
         <EuiText size="s">
           <h3>{title}</h3>
         </EuiText>
         <EuiSpacer size="m" />
-        <EuiFlexGrid columns={3}>{settings}</EuiFlexGrid>
+        <EuiFlexGrid columns={3}>{configs}</EuiFlexGrid>
       </>
     );
   };
@@ -185,45 +125,24 @@ export class Main extends React.Component {
               </div>
               <EuiHorizontalRule margin="xs" />
               <div style={{ padding: 32 }}>
-                {this.displayFlexGrid(
-                  AUDIT_UI_SETTINGS.LAYER_SETTINGS,
-                  <>
-                    {this.displayBooleanFlexItem(AUDIT_UI_SETTINGS.REST_LAYER, true)}
-                    {this.displayArrayFlexItem(AUDIT_UI_SETTINGS.REST_DISABLED_CATEGORIES, [
-                      'GRANTED PRIVILEGES',
-                      'AUTHENTICATED',
-                    ])}
-                    {this.displayBooleanFlexItem(AUDIT_UI_SETTINGS.TRANSPORT_LAYER, true)}
-                    {this.displayArrayFlexItem(AUDIT_UI_SETTINGS.TRANSPORT_DISABLED_CATEGORIES, [
-                      'FAILED_LOGIN',
-                    ])}
-                  </>
-                )}
+                {this.displayConfigs(AUDIT_LABELS.LAYER_SETTINGS, [
+                  CONFIG.AUDIT.REST_LAYER,
+                  CONFIG.AUDIT.REST_DISABLED_CATEGORIES,
+                  CONFIG.AUDIT.TRANSPORT_LAYER,
+                  CONFIG.AUDIT.TRANSPORT_DISABLED_CATEGORIES,
+                ])}
                 <EuiSpacer size="xl" />
-                {this.displayFlexGrid(
-                  AUDIT_UI_SETTINGS.ATTRIBUTE_SETTINGS,
-                  <>
-                    {this.displayBooleanFlexItem(AUDIT_UI_SETTINGS.BULK_REQUESTS, true)}
-                    {this.displayBooleanFlexItem(AUDIT_UI_SETTINGS.RESOLVE_INDICES, false)}
-                    {this.displayBooleanFlexItem(AUDIT_UI_SETTINGS.RESOLVE_INDICES, true)}
-                    {this.displayBooleanFlexItem(AUDIT_UI_SETTINGS.SENSITIVE_HEADERS, false)}
-                  </>
-                )}
+                {this.displayConfigs(AUDIT_LABELS.ATTRIBUTE_SETTINGS, [
+                  CONFIG.AUDIT.BULK_REQUESTS,
+                  CONFIG.AUDIT.REQUEST_BODY,
+                  CONFIG.AUDIT.RESOLVE_INDICES,
+                  CONFIG.AUDIT.SENSITIVE_HEADERS,
+                ])}
                 <EuiSpacer size="xl" />
-                {this.displayFlexGrid(
-                  AUDIT_UI_SETTINGS.IGNORE_SETTINGS,
-                  <>
-                    {this.displayArrayFlexItem(AUDIT_UI_SETTINGS.EXCLUDE_USERS, [
-                      'kibanaserver',
-                      'sujith',
-                      'kvngar',
-                    ])}
-                    {this.displayArrayFlexItem(AUDIT_UI_SETTINGS.EXCLUDE_REQUESTS, [
-                      'indices:data/read/*',
-                      'indices:settings/read*',
-                    ])}
-                  </>
-                )}
+                {this.displayConfigs(AUDIT_LABELS.IGNORE_SETTINGS, [
+                  CONFIG.AUDIT.IGNORED_USERS,
+                  CONFIG.AUDIT.IGNORED_REQUESTS,
+                ])}
               </div>
             </EuiPanel>
 
@@ -244,52 +163,23 @@ export class Main extends React.Component {
               </div>
               <EuiHorizontalRule margin="xs" />
               <div style={{ padding: 32, paddingTop: 16 }}>
-                {this.displayBooleanFlexItem(AUDIT_UI_SETTINGS.COMPLIANCE_MODE, true)}
+                {this.displayConfig(CONFIG.COMPLIANCE.ENABLED)}
                 <EuiSpacer />
                 <EuiPanel>
-                  {this.displayFlexGrid(
-                    AUDIT_UI_SETTINGS.COMPLIANCE_READ,
-                    <>
-                      {this.displayBooleanFlexItem(
-                        AUDIT_UI_SETTINGS.COMPLIANCE_READ_METADATA_ONLY,
-                        true
-                      )}
-                      {this.displayArrayFlexItem(AUDIT_UI_SETTINGS.COMPLIANCE_READ_IGNORED_USERS, [
-                        'kibanaserver',
-                        'sujith',
-                        'kvngar',
-                      ])}
-                      {this.displayArrayFlexItem(
-                        AUDIT_UI_SETTINGS.COMPLIANCE_READ_WATCHED_FIELDS,
-                        []
-                      )}
-                    </>
-                  )}
+                {this.displayConfigs(AUDIT_LABELS.COMPLIANCE_READ, [
+                  CONFIG.COMPLIANCE.READ_METADATA_ONLY,
+                  CONFIG.COMPLIANCE.READ_IGNORED_USERS,
+                  CONFIG.COMPLIANCE.READ_WATCHED_FIELDS,
+                ])}
                 </EuiPanel>
                 <EuiSpacer />
                 <EuiPanel>
-                  {this.displayFlexGrid(
-                    AUDIT_UI_SETTINGS.COMPLIANCE_WRITE,
-                    <>
-                      {this.displayBooleanFlexItem(
-                        AUDIT_UI_SETTINGS.COMPLIANCE_WRITE_METADATA_ONLY,
-                        true
-                      )}
-                      {this.displayBooleanFlexItem(
-                        AUDIT_UI_SETTINGS.COMPLIANCE_WRITE_LOG_DIFFS,
-                        true
-                      )}
-                      {this.displayArrayFlexItem(AUDIT_UI_SETTINGS.COMPLIANCE_WRITE_IGNORED_USERS, [
-                        'kibanaserver',
-                        'sujith',
-                        'kvngar',
-                      ])}
-                      {this.displayArrayFlexItem(
-                        AUDIT_UI_SETTINGS.COMPLIANCE_WRITE_WATCHED_INDICES,
-                        []
-                      )}
-                    </>
-                  )}
+                {this.displayConfigs(AUDIT_LABELS.COMPLIANCE_WRITE, [
+                  CONFIG.COMPLIANCE.WRITE_METADATA_ONLY,
+                  CONFIG.COMPLIANCE.WRITE_LOG_DIFFS,
+                  CONFIG.COMPLIANCE.WRITE_IGNORED_USERS,
+                  CONFIG.COMPLIANCE.WRITE_WATCHED_FIELDS,
+                ])}
                 </EuiPanel>
               </div>
             </EuiPanel>
