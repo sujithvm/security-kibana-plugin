@@ -42,6 +42,66 @@ const AUDIT_UI_SETTINGS = {
   COMPLIANCE_WRITE_WATCHED_INDICES: 'Watched indices',
 };
 
+
+const CONFIG = {
+  REST_LAYER: {
+    title: "REST layer",
+    label: "config:audit:enable_rest",
+    description: "Enable or disable auditing events that happen on the REST layer",
+    type: "bool"
+  },
+  REST_DISABLED_CATEGORIES: {
+    title: "REST disabled categories",
+    label: "config:audit:disabled_rest_categories",
+    description: "Specify audit categories which must be ignored on the REST layer",
+    type: "array",
+    options: ["BAD_HEADERS", "FAILED_LOGIN", "MISSING_PRIVILEGES", "GRANTED_PRIVILEGES", "SSL_EXCEPTION", "AUTHENTICATED"]
+  },
+  TRANSPORT_LAYER: {
+    title: "Transport layer",
+    label: "config:audit:enable_transport",
+    description: "Enable or disable auditing events that happen on the Transport layer",
+    type: "bool"
+  },
+  TRANSPORT_DISABLED_CATEGORIES: {
+    title: "Transport disabled categories",
+    label: "config:audit:disabled_transport_categories",
+    description: "Specify audit categories which must be ignored on the Transport layer",
+    type: "array",
+    options: ["BAD_HEADERS", "FAILED_LOGIN", "MISSING_PRIVILEGES", "GRANTED_PRIVILEGES", "SSL_EXCEPTION", "AUTHENTICATED"]
+  },
+  BULK_REQUESTS: {
+    title: "Bulk requests",
+    label: "config:audit:resolve_bulk_requests",
+    description: "Resolve bulk requests during auditing of requests.",
+    type: "bool"
+  },
+  REQUEST_BODY: {
+    title: "Bulk requests",
+    label: "config:audit:log_request_body",
+    description: "Include request body during auditing of requests.",
+    type: "bool"
+  },
+  RESOLVE_INDICES: {
+    title: "Bulk requests",
+    label: "config:audit:resolve_bulk_requests",
+    description: "Resolve bulk requests during auditing of requests.",
+    type: "bool"
+  },
+  IGNORED_USERS: {
+    title: "Sensitive header",
+    label: "config:audit:exclude_sensitive_headers",
+    description: "Users to ignore during auditing.",
+    type: "array"
+  },
+  IGNORED_REQUESTS: {
+    title: "Transport disabled categories",
+    label: "config:audit:disabled_transport_categories",
+    description: "Request patterns to ignore during auditing.",
+    type: "array"
+  }
+}
+
 export class Main extends React.Component {
   constructor(props) {
     super(props);
