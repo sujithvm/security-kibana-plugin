@@ -128,7 +128,7 @@ export const CONFIG = {
       type: 'array',
     },
     READ_WATCHED_FIELDS: {
-      title: 'Ignored users',
+      title: 'Watched fields',
       key: 'config:compliance:read_watched_fields',
       path: 'compliance.read_watched_fields',
       description: 'List the indices and fields to watch during read events.',
