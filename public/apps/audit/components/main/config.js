@@ -11,10 +11,10 @@ export const AUDIT_LABELS = {
 
 export const CONFIG = {
   ENABLED: {
-    title: 'Enabled',
-    key: 'enabled',
+    title: 'Enable audit logging',
+    key: 'config:enabled',
     path: 'enabled',
-    description: 'Enabled or disable audit logging',
+    description: 'Enable or disable audit logging',
     type: 'bool',
   },
   AUDIT: {
@@ -159,7 +159,7 @@ export const CONFIG = {
       title: 'Watch indices',
       key: 'config:compliance:write_watched_indices',
       path: 'compliance.write_watched_indices',
-      description: 'List the indices to watch during read events.',
+      description: 'List the indices to watch during write events.',
       type: 'array',
     },
   },

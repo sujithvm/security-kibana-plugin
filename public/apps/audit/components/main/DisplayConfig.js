@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { EuiFlexItem, EuiFlexGrid, EuiSpacer, EuiText, EuiTextColor } from '@elastic/eui';
+import { EuiFlexItem, EuiFlexGrid, EuiSpacer, EuiText, EuiTextColor, EuiTitle } from '@elastic/eui';
 import { get } from 'lodash';
 
 const displayType = (setting, val) => {
@@ -15,7 +15,7 @@ const displayType = (setting, val) => {
 export const DisplayConfig = ({ config, setting }) => (
   <>
     <EuiFlexItem>
-      <EuiText size="s">
+      <EuiText size="m">
         <h5>{setting.title}</h5>
         <p>
           <EuiTextColor color="subdued">
@@ -32,11 +32,11 @@ DisplayConfig.propTypes = {
   setting: PropTypes.object,
 };
 
-export const DisplayMultipleConfigs = ({ config, title, settings }) => (
+export const DisplayMultipleConfigs = ({ config, settings, title }) => (
   <>
-    <EuiText size="s">
+    <EuiTitle>
       <h3>{title}</h3>
-    </EuiText>
+    </EuiTitle>
     <EuiSpacer size="m" />
     <EuiFlexGrid columns={3}>
       {settings.map(setting => {
@@ -48,6 +48,6 @@ export const DisplayMultipleConfigs = ({ config, title, settings }) => (
 
 DisplayMultipleConfigs.propTypes = {
   config: PropTypes.object,
-  title: PropTypes.string,
   settings: PropTypes.array,
+  title: PropTypes.string,
 };
