@@ -1,5 +1,15 @@
-import React, { useEffect } from 'react';
-import { EuiPage, EuiPageBody, EuiPanel, EuiSpacer, EuiTitle } from '@elastic/eui';
+import React from 'react';
+import {
+  EuiPage,
+  EuiPageBody,
+  EuiPanel,
+  EuiSpacer,
+  EuiTitle,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiButton,
+} from '@elastic/eui';
+import { toastNotifications } from 'ui/notify';
 import { AUDIT_LABELS, CONFIG, CONGIG_GROUPS } from './config';
 import ContentPanel from './ContentPanel';
 import { DisplayConfigGroup } from './DisplayConfigGroup';
@@ -79,6 +89,37 @@ export class Main extends React.Component {
 
   toggleDisplay = (display_settings, edit_audit_settings, edit_compliance_settings) => {
     this.setState({ display_settings, edit_audit_settings, edit_compliance_settings });
+    window.scrollTo({top: 0});
+  };
+
+  save = () => {
+    this.toggleDisplay(true, false, false);
+    toastNotifications.addSuccess("Audit configuration was successfully updated.")
+    toastNotifications.addDanger("An error occured while attempting to update audit configuration.")
+  }
+
+  renderSave = () => {
+    return (
+      <>
+        <EuiFlexGroup justifyContent="flexEnd">
+          <EuiFlexItem grow={false}>
+            <EuiButton
+              onClick={() => {
+                this.toggleDisplay(true, false, false);
+              }}
+            >
+              Cancel
+            </EuiButton>
+          </EuiFlexItem>
+          <EuiFlexItem grow={false}>
+            <EuiButton fill onClick={() => {
+                this.save();
+              }}
+              >Save</EuiButton>
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      </>
+    );
   };
 
   renderEditableAuditSettings = () => {
@@ -104,6 +145,7 @@ export class Main extends React.Component {
           ></EditableConfigGroup>
         </EuiPanel>
         <EuiSpacer />
+        {this.renderSave()}
       </>
     );
   };
@@ -133,6 +175,7 @@ export class Main extends React.Component {
           </EuiPanel>
         </EuiPanel>
         <EuiSpacer />
+        {this.renderSave()}
       </>
     );
   };
@@ -202,7 +245,6 @@ export class Main extends React.Component {
   };
 
   render() {
-    console.log(this.state.edit_compliance_settings);
     return (
       <>
         <EuiPage>
