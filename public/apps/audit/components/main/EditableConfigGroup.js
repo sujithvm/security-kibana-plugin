@@ -9,23 +9,14 @@ import {
   EuiSpacer,
 } from '@elastic/eui';
 import { cloneDeep, get } from 'lodash';
-
-const generateComboBoxLabels = arr => {
-  return arr.map(x => {
-    return { label: x };
-  });
-};
-
-const removeComboBoxLabels = arr => {
-  return arr.map(x => x.label);
-};
+import { displayBoolean, generateComboBoxLabels, removeComboBoxLabels } from './utils';
 
 const renderField = (config, setting, handleChange) => {
   const val = get(config, setting.path);
   if (setting.type === 'bool') {
     return (
       <EuiSwitch
-        label={val ? 'Enabled' : 'Disabled'}
+        label={displayBoolean(val)}
         checked={val}
         onChange={e => {
           handleChange(setting, e.target.checked);
