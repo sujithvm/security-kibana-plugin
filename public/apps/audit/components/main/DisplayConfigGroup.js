@@ -1,17 +1,8 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { EuiFlexItem, EuiFlexGrid, EuiSpacer, EuiText, EuiTextColor, EuiTitle } from '@elastic/eui';
-import { displayBoolean, displayArray } from './utils';
+import { displaySettingType } from './utils';
 import { get } from 'lodash';
-
-const displayType = (setting, val) => {
-  if (setting.type === 'bool') return displayBoolean(val);
-  else if (setting.type === 'array') {
-    return displayArray(val);
-  } else {
-    return 'Unknown type';
-  }
-};
 
 export const DisplayConfigGroup = ({ config_group, config }) => (
   <>
@@ -32,7 +23,7 @@ export const DisplayConfigGroup = ({ config_group, config }) => (
                 <h5>{setting.title}</h5>
                 <p>
                   <EuiTextColor color="subdued">
-                    <small>{displayType(setting, get(config, setting.path))}</small>
+                    <small>{displaySettingType(setting, get(config, setting.path))}</small>
                   </EuiTextColor>
                 </p>
               </EuiText>
