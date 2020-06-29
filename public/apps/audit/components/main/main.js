@@ -10,11 +10,11 @@ import {
   EuiButton,
 } from '@elastic/eui';
 import { toastNotifications } from 'ui/notify';
-import { AUDIT_LABELS, CONFIG, CONGIG_GROUPS } from './config';
+import { cloneDeep, set } from 'lodash';
+import { CONFIG_LABELS, CONFIG_GROUPS } from './config';
 import ContentPanel from './ContentPanel';
 import { DisplayConfigGroup } from './DisplayConfigGroup';
 import { EditableConfigGroup } from './EditableConfigGroup';
-import { cloneDeep, set } from 'lodash';
 
 export class Main extends React.Component {
   constructor(props) {
@@ -127,19 +127,19 @@ export class Main extends React.Component {
       <>
         <EuiPanel>
           <EditableConfigGroup
-            config_group={CONGIG_GROUPS.LAYER_SETTINGS}
+            config_group={CONFIG_GROUPS.LAYER_SETTINGS}
             config={this.state.edit_config}
             handleChange={this.handleChange}
           ></EditableConfigGroup>
           <EuiSpacer size="xl" />
           <EditableConfigGroup
-            config_group={CONGIG_GROUPS.ATTRIBUTE_SETTINGS}
+            config_group={CONFIG_GROUPS.ATTRIBUTE_SETTINGS}
             config={this.state.edit_config}
             handleChange={this.handleChange}
           ></EditableConfigGroup>
           <EuiSpacer size="xl" />
           <EditableConfigGroup
-            config_group={CONGIG_GROUPS.IGNORE_SETTINGS}
+            config_group={CONFIG_GROUPS.IGNORE_SETTINGS}
             config={this.state.edit_config}
             handleChange={this.handleChange}
           ></EditableConfigGroup>
@@ -155,12 +155,12 @@ export class Main extends React.Component {
       <>
         <EuiPanel>
           <EuiTitle>
-            <h3>{AUDIT_LABELS.COMPLIANCE_SETTINGS}</h3>
+            <h3>{CONFIG_LABELS.COMPLIANCE_SETTINGS}</h3>
           </EuiTitle>
           <EuiSpacer />
           <EuiPanel>
             <EditableConfigGroup
-              config_group={CONGIG_GROUPS.COMPLIANCE_SETTINGS_READ}
+              config_group={CONFIG_GROUPS.COMPLIANCE_SETTINGS_READ}
               config={this.state.edit_config}
               handleChange={this.handleChange}
             ></EditableConfigGroup>
@@ -168,7 +168,7 @@ export class Main extends React.Component {
           <EuiSpacer size="xl" />
           <EuiPanel>
             <EditableConfigGroup
-              config_group={CONGIG_GROUPS.COMPLIANCE_SETTINGS_WRITE}
+              config_group={CONFIG_GROUPS.COMPLIANCE_SETTINGS_WRITE}
               config={this.state.edit_config}
               handleChange={this.handleChange}
             ></EditableConfigGroup>
@@ -183,58 +183,57 @@ export class Main extends React.Component {
   renderAuditSettings = () => {
     return (
       <>
-        <ContentPanel title={AUDIT_LABELS.AUDIT_LOGGING}>
+        <ContentPanel title={CONFIG_LABELS.AUDIT_LOGGING}>
           <EditableConfigGroup
-            config_group={CONGIG_GROUPS.AUDIT_SETTINGS}
+            config_group={CONFIG_GROUPS.AUDIT_SETTINGS}
             config={this.state.edit_config}
-            setting={CONFIG.ENABLED}
             handleChange={this.handleChange}
           ></EditableConfigGroup>
         </ContentPanel>
         <EuiSpacer />
         <ContentPanel
-          title={AUDIT_LABELS.GENERAL_SETTINGS}
+          title={CONFIG_LABELS.GENERAL_SETTINGS}
           configureHandler={() => {
             this.toggleDisplay(false, true, false);
           }}
         >
           <DisplayConfigGroup
-            config_group={CONGIG_GROUPS.LAYER_SETTINGS}
+            config_group={CONFIG_GROUPS.LAYER_SETTINGS}
             config={this.state.config}
           />
           <EuiSpacer size="xl" />
           <DisplayConfigGroup
-            config_group={CONGIG_GROUPS.ATTRIBUTE_SETTINGS}
+            config_group={CONFIG_GROUPS.ATTRIBUTE_SETTINGS}
             config={this.state.config}
           />
           <EuiSpacer size="xl" />
           <DisplayConfigGroup
-            config_group={CONGIG_GROUPS.IGNORE_SETTINGS}
+            config_group={CONFIG_GROUPS.IGNORE_SETTINGS}
             config={this.state.config}
           />
         </ContentPanel>
         <EuiSpacer />
         <ContentPanel
-          title={AUDIT_LABELS.COMPLIANCE_SETTINGS}
+          title={CONFIG_LABELS.COMPLIANCE_SETTINGS}
           configureHandler={() => {
             this.toggleDisplay(false, false, true);
           }}
         >
           <DisplayConfigGroup
             config={this.state.config}
-            config_group={CONGIG_GROUPS.COMPLIANCE_CONFIG_SETTINGS}
+            config_group={CONFIG_GROUPS.COMPLIANCE_CONFIG_SETTINGS}
           />
           <EuiSpacer />
           <EuiPanel>
             <DisplayConfigGroup
-              config_group={CONGIG_GROUPS.COMPLIANCE_SETTINGS_READ}
+              config_group={CONFIG_GROUPS.COMPLIANCE_SETTINGS_READ}
               config={this.state.config}
             />
           </EuiPanel>
           <EuiSpacer />
           <EuiPanel>
             <DisplayConfigGroup
-              config_group={CONGIG_GROUPS.COMPLIANCE_SETTINGS_WRITE}
+              config_group={CONFIG_GROUPS.COMPLIANCE_SETTINGS_WRITE}
               config={this.state.config}
             />
           </EuiPanel>
