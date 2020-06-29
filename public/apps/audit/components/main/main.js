@@ -1,9 +1,9 @@
 import React from 'react';
 import { EuiPage, EuiPageBody, EuiPanel, EuiSpacer, EuiTitle } from '@elastic/eui';
-import { AUDIT_LABELS, CONFIG } from './config';
+import { AUDIT_LABELS, CONFIG, CONGIG_GROUPS } from './config';
 import ContentPanel from './ContentPanel';
-import { DisplayConfig, DisplayMultipleConfigs } from './DisplayConfig';
-import { EditableConfig, EditableMultipleConfigs } from './EditableConfig';
+import { DisplayConfigGroup } from './DisplayConfigGroup';
+import { EditableConfigGroup } from './EditableConfigGroup';
 import { cloneDeep, set } from 'lodash';
 
 export class Main extends React.Component {
@@ -78,36 +78,23 @@ export class Main extends React.Component {
     return (
       <>
         <EuiPanel>
-          <EditableMultipleConfigs
-            title={AUDIT_LABELS.LAYER_SETTINGS}
+          <EditableConfigGroup
+            config_group={CONGIG_GROUPS.LAYER_SETTINGS}
             config={this.state.edit_config}
-            settings={[
-              CONFIG.AUDIT.REST_LAYER,
-              CONFIG.AUDIT.REST_DISABLED_CATEGORIES,
-              CONFIG.AUDIT.TRANSPORT_LAYER,
-              CONFIG.AUDIT.TRANSPORT_DISABLED_CATEGORIES,
-            ]}
             handleChange={this.handleChange}
-          ></EditableMultipleConfigs>
+          ></EditableConfigGroup>
           <EuiSpacer size="xl" />
-          <EditableMultipleConfigs
-            title={AUDIT_LABELS.ATTRIBUTE_SETTINGS}
+          <EditableConfigGroup
+            config_group={CONGIG_GROUPS.ATTRIBUTE_SETTINGS}
             config={this.state.edit_config}
-            settings={[
-              CONFIG.AUDIT.BULK_REQUESTS,
-              CONFIG.AUDIT.REQUEST_BODY,
-              CONFIG.AUDIT.RESOLVE_INDICES,
-              CONFIG.AUDIT.SENSITIVE_HEADERS,
-            ]}
             handleChange={this.handleChange}
-          ></EditableMultipleConfigs>
+          ></EditableConfigGroup>
           <EuiSpacer size="xl" />
-          <EditableMultipleConfigs
-            title={AUDIT_LABELS.IGNORE_SETTINGS}
+          <EditableConfigGroup
+            config_group={CONGIG_GROUPS.IGNORE_SETTINGS}
             config={this.state.edit_config}
-            settings={[CONFIG.AUDIT.IGNORED_USERS, CONFIG.AUDIT.IGNORED_REQUESTS]}
             handleChange={this.handleChange}
-          ></EditableMultipleConfigs>
+          ></EditableConfigGroup>
         </EuiPanel>
       </>
     );
@@ -122,30 +109,19 @@ export class Main extends React.Component {
           </EuiTitle>
           <EuiSpacer />
           <EuiPanel>
-            <EditableMultipleConfigs
-              title={AUDIT_LABELS.COMPLIANCE_READ}
+            <EditableConfigGroup
+              config_group={CONGIG_GROUPS.COMPLIANCE_SETTINGS_READ}
               config={this.state.edit_config}
-              settings={[
-                CONFIG.COMPLIANCE.READ_METADATA_ONLY,
-                CONFIG.COMPLIANCE.READ_IGNORED_USERS,
-                CONFIG.COMPLIANCE.READ_WATCHED_FIELDS,
-              ]}
               handleChange={this.handleChange}
-            ></EditableMultipleConfigs>
+            ></EditableConfigGroup>
           </EuiPanel>
           <EuiSpacer size="xl" />
           <EuiPanel>
-            <EditableMultipleConfigs
-              title={AUDIT_LABELS.COMPLIANCE_WRITE}
+            <EditableConfigGroup
+              config_group={CONGIG_GROUPS.COMPLIANCE_SETTINGS_WRITE}
               config={this.state.edit_config}
-              settings={[
-                CONFIG.COMPLIANCE.WRITE_METADATA_ONLY,
-                CONFIG.COMPLIANCE.WRITE_LOG_DIFFS,
-                CONFIG.COMPLIANCE.WRITE_IGNORED_USERS,
-                CONFIG.COMPLIANCE.WRITE_WATCHED_FIELDS,
-              ]}
               handleChange={this.handleChange}
-            ></EditableMultipleConfigs>
+            ></EditableConfigGroup>
           </EuiPanel>
         </EuiPanel>
       </>
@@ -162,68 +138,48 @@ export class Main extends React.Component {
             {this.renderEditableComplianceSettings()}
             <EuiSpacer />
             <ContentPanel title={AUDIT_LABELS.AUDIT_LOGGING}>
-            <EditableConfig
+              <EditableConfigGroup
+                config_group={CONGIG_GROUPS.AUDIT_SETTINGS}
                 config={this.state.edit_config}
                 setting={CONFIG.ENABLED}
                 handleChange={this.handleChange}
-              ></EditableConfig>
+              ></EditableConfigGroup>
             </ContentPanel>
             <EuiSpacer />
             <ContentPanel title={AUDIT_LABELS.GENERAL_SETTINGS} configureHandler={() => {}}>
-              <DisplayMultipleConfigs
+              <DisplayConfigGroup
+                config_group={CONGIG_GROUPS.LAYER_SETTINGS}
                 config={this.state.config}
-                title={AUDIT_LABELS.LAYER_SETTINGS}
-                settings={[
-                  CONFIG.AUDIT.REST_LAYER,
-                  CONFIG.AUDIT.REST_DISABLED_CATEGORIES,
-                  CONFIG.AUDIT.TRANSPORT_LAYER,
-                  CONFIG.AUDIT.TRANSPORT_DISABLED_CATEGORIES,
-                ]}
               />
               <EuiSpacer size="xl" />
-              <DisplayMultipleConfigs
+              <DisplayConfigGroup
+                config_group={CONGIG_GROUPS.ATTRIBUTE_SETTINGS}
                 config={this.state.config}
-                title={AUDIT_LABELS.ATTRIBUTE_SETTINGS}
-                settings={[
-                  CONFIG.AUDIT.BULK_REQUESTS,
-                  CONFIG.AUDIT.REQUEST_BODY,
-                  CONFIG.AUDIT.RESOLVE_INDICES,
-                  CONFIG.AUDIT.SENSITIVE_HEADERS,
-                ]}
               />
               <EuiSpacer size="xl" />
-              <DisplayMultipleConfigs
+              <DisplayConfigGroup
+                config_group={CONGIG_GROUPS.IGNORE_SETTINGS}
                 config={this.state.config}
-                title={AUDIT_LABELS.IGNORE_SETTINGS}
-                settings={[CONFIG.AUDIT.IGNORED_USERS, CONFIG.AUDIT.IGNORED_REQUESTS]}
               />
             </ContentPanel>
             <EuiSpacer />
             <ContentPanel title={AUDIT_LABELS.COMPLIANCE_SETTINGS} configureHandler={() => {}}>
-              <DisplayConfig config={this.state.config} setting={CONFIG.COMPLIANCE.ENABLED} />
+              <DisplayConfigGroup
+                config={this.state.config}
+                config_group={CONGIG_GROUPS.COMPLIANCE_CONFIG_SETTINGS}
+              />
               <EuiSpacer />
               <EuiPanel>
-                <DisplayMultipleConfigs
+                <DisplayConfigGroup
+                  config_group={CONGIG_GROUPS.COMPLIANCE_SETTINGS_READ}
                   config={this.state.config}
-                  title={AUDIT_LABELS.COMPLIANCE_READ}
-                  settings={[
-                    CONFIG.COMPLIANCE.READ_METADATA_ONLY,
-                    CONFIG.COMPLIANCE.READ_IGNORED_USERS,
-                    CONFIG.COMPLIANCE.READ_WATCHED_FIELDS,
-                  ]}
                 />
               </EuiPanel>
               <EuiSpacer />
               <EuiPanel>
-                <DisplayMultipleConfigs
+                <DisplayConfigGroup
+                  config_group={CONGIG_GROUPS.COMPLIANCE_SETTINGS_WRITE}
                   config={this.state.config}
-                  title={AUDIT_LABELS.COMPLIANCE_WRITE}
-                  settings={[
-                    CONFIG.COMPLIANCE.WRITE_METADATA_ONLY,
-                    CONFIG.COMPLIANCE.WRITE_LOG_DIFFS,
-                    CONFIG.COMPLIANCE.WRITE_IGNORED_USERS,
-                    CONFIG.COMPLIANCE.WRITE_WATCHED_FIELDS,
-                  ]}
                 />
               </EuiPanel>
             </ContentPanel>

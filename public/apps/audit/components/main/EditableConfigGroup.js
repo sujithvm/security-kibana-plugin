@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import {
   EuiDescribedFormGroup,
@@ -64,46 +64,36 @@ const displayField = (config, setting, handleChange) => {
   }
 };
 
-export const EditableConfig = ({ config, setting, handleChange }) => (
+export const EditableConfigGroup = ({ config_group, config, handleChange }) => (
   <>
-    <EuiDescribedFormGroup
-      title={<h3>{setting.title}</h3>}
-      description={<>{setting.description}</>}
-      fullWidth
-    >
-      <EuiFormRow label={setting.key}>{displayField(config, setting, handleChange)}</EuiFormRow>
-    </EuiDescribedFormGroup>
-  </>
-);
-
-EditableConfig.propTypes = {
-  config: PropTypes.object,
-  setting: PropTypes.object,
-  handleChange: PropTypes.func,
-};
-
-export const EditableMultipleConfigs = ({ config, settings, handleChange, title }) => (
-  <>
-    <EuiTitle>
-      <h3>{title}</h3>
-    </EuiTitle>
-    <EuiSpacer />
-    {settings.map(setting => {
+    {config_group.title && (
+      <>
+        <EuiTitle>
+          <h3>{config_group.title}</h3>
+        </EuiTitle>
+        <EuiSpacer />
+      </>
+    )}
+    {config_group.settings.map(setting => {
       return (
-        <EditableConfig
-          key={setting.key}
-          config={config}
-          setting={setting}
-          handleChange={handleChange}
-        ></EditableConfig>
+        <Fragment key={setting.key}>
+          <EuiDescribedFormGroup
+            title={<h3>{setting.title}</h3>}
+            description={<>{setting.description}</>}
+            fullWidth
+          >
+            <EuiFormRow label={setting.key}>
+              {displayField(config, setting, handleChange)}
+            </EuiFormRow>
+          </EuiDescribedFormGroup>
+        </Fragment>
       );
     })}
   </>
 );
 
-EditableMultipleConfigs.propTypes = {
+EditableConfigGroup.propTypes = {
+  config_group: PropTypes.object,
   config: PropTypes.object,
-  settings: PropTypes.array,
   handleChange: PropTypes.func,
-  title: PropTypes.string,
 };
