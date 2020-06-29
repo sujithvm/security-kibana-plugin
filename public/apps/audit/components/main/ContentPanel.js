@@ -20,7 +20,7 @@ const ContentPanel = ({ title, children, configureHandler }) => (
         </EuiFlexItem>
         { typeof configureHandler == 'function' && 
           <EuiFlexItem grow={false}>
-            <EuiButton>Configure</EuiButton>
+            <EuiButton onClick={configureHandler}>Configure</EuiButton>
           </EuiFlexItem>
         }
       </EuiFlexGroup>

@@ -20,7 +20,7 @@ const removeComboBoxLabels = arr => {
   return arr.map(x => x.label);
 };
 
-const displayField = (config, setting, handleChange) => {
+const renderField = (config, setting, handleChange) => {
   const val = get(config, setting.path);
   if (setting.type === 'bool') {
     return (
@@ -83,7 +83,7 @@ export const EditableConfigGroup = ({ config_group, config, handleChange }) => (
             fullWidth
           >
             <EuiFormRow label={setting.key}>
-              {displayField(config, setting, handleChange)}
+              {renderField(config, setting, handleChange)}
             </EuiFormRow>
           </EuiDescribedFormGroup>
         </Fragment>
