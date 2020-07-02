@@ -219,3 +219,31 @@ export const CONFIG_GROUPS = {
     ]
   }
 }
+
+export const SAMPLE_CONFIG = {
+  enabled: true,
+  audit: {
+    enable_rest: true,
+    disabled_rest_categories: ['GRANTED_PRIVILEGES', 'SSL_EXCEPTION', 'AUTHENTICATED'],
+    enable_transport: true,
+    disabled_transport_categories: ['GRANTED_PRIVILEGES', 'AUTHENTICATED'],
+    resolve_bulk_requests: false,
+    log_request_body: true,
+    resolve_indices: true,
+    exclude_sensitive_headers: true,
+    ignore_users: ['kibanaserver'],
+    ignore_requests: [],
+  },
+  compliance: {
+    enabled: true,
+    internal_config: true,
+    external_config: false,
+    read_metadata_only: true,
+    read_watched_fields: {},
+    read_ignore_users: ['kibanaserver', 'test'],
+    write_metadata_only: true,
+    write_log_diffs: false,
+    write_watched_indices: [],
+    write_ignore_users: ['kibanaserver'],
+  }
+}

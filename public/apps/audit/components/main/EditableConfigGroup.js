@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   EuiDescribedFormGroup,
@@ -10,81 +10,88 @@ import {
 } from '@elastic/eui';
 import { cloneDeep, get } from 'lodash';
 import { displayBoolean, generateComboBoxLabels, removeComboBoxLabels } from './utils';
+import { EditorBox } from './EditorBox';
 
-const renderField = (config, setting, handleChange) => {
-  const val = get(config, setting.path);
-  if (setting.type === 'bool') {
-    return (
-      <EuiSwitch
-        label={displayBoolean(val)}
-        checked={val}
-        onChange={e => {
-          handleChange(setting, e.target.checked);
-        }}
-      />
-    );
-  } else if (setting.type === 'array' && typeof setting.options !== 'undefined') {
-    return (
-      <EuiComboBox
-        placeholder={setting.title}
-        options={generateComboBoxLabels(setting.options)}
-        selectedOptions={generateComboBoxLabels(val)}
-        onChange={selectedOptions => {
-          handleChange(setting, removeComboBoxLabels(selectedOptions));
-        }}
-      />
-    );
-  } else if (setting.type === 'array') {
-    return (
-      <EuiComboBox
-        noSuggestions
-        placeholder={setting.title}
-        selectedOptions={generateComboBoxLabels(val)}
-        onChange={selectedOptions => {
-          handleChange(setting, removeComboBoxLabels(selectedOptions));
-        }}
-        onCreateOption={searchValue => {
-          let updatedVal = cloneDeep(val);
-          updatedVal.push(searchValue);
-          handleChange(setting, updatedVal);
-        }}
-      />
-    );
-  } else {
-    return <></>;
-  }
-};
-
-export const EditableConfigGroup = ({ config_group, config, handleChange }) => (
-  <>
-    {config_group.title && (
-      <>
-        <EuiTitle>
-          <h3>{config_group.title}</h3>
-        </EuiTitle>
-        <EuiSpacer />
-      </>
-    )}
-    {config_group.settings.map(setting => {
+const EditableConfigGroup = ({ config_group, config, handleChange }) => {
+  const renderField = (config, setting, handleChange) => {
+    const val = get(config, setting.path);
+    if (setting.type === 'bool') {
       return (
-        <Fragment key={setting.key}>
-          <EuiDescribedFormGroup
-            title={<h3>{setting.title}</h3>}
-            description={<>{setting.description}</>}
-            fullWidth
-          >
-            <EuiFormRow label={setting.key}>
-              {renderField(config, setting, handleChange)}
-            </EuiFormRow>
-          </EuiDescribedFormGroup>
-        </Fragment>
+        <EuiSwitch
+          label={displayBoolean(val)}
+          checked={val}
+          onChange={e => {
+            handleChange(setting, e.target.checked);
+          }}
+        />
       );
-    })}
-  </>
-);
+    } else if (setting.type === 'array' && typeof setting.options !== 'undefined') {
+      return (
+        <EuiComboBox
+          placeholder={setting.title}
+          options={generateComboBoxLabels(setting.options)}
+          selectedOptions={generateComboBoxLabels(val)}
+          onChange={selectedOptions => {
+            handleChange(setting, removeComboBoxLabels(selectedOptions));
+          }}
+        />
+      );
+    } else if (setting.type === 'array') {
+      return (
+        <EuiComboBox
+          noSuggestions
+          placeholder={setting.title}
+          selectedOptions={generateComboBoxLabels(val)}
+          onChange={selectedOptions => {
+            handleChange(setting, removeComboBoxLabels(selectedOptions));
+          }}
+          onCreateOption={searchValue => {
+            let updatedVal = cloneDeep(val);
+            updatedVal.push(searchValue);
+            handleChange(setting, updatedVal);
+          }}
+        />
+      );
+    } else if (setting.type === 'map') {
+      return <EditorBox config={config} handleChange={handleChange} setting={setting} />;
+    } else {
+      return <></>;
+    }
+  };
+
+  return (
+    <>
+      {config_group.title && (
+        <>
+          <EuiTitle>
+            <h3>{config_group.title}</h3>
+          </EuiTitle>
+          <EuiSpacer />
+        </>
+      )}
+      {config_group.settings.map(setting => {
+        return (
+          <Fragment key={setting.key}>
+            <EuiDescribedFormGroup
+              title={<h3>{setting.title}</h3>}
+              description={<>{setting.description}</>}
+              fullWidth
+            >
+              <EuiFormRow label={setting.key}>
+                {renderField(config, setting, handleChange)}
+              </EuiFormRow>
+            </EuiDescribedFormGroup>
+          </Fragment>
+        );
+      })}
+    </>
+  );
+};
 
 EditableConfigGroup.propTypes = {
   config_group: PropTypes.object,
   config: PropTypes.object,
   handleChange: PropTypes.func,
 };
+
+export default EditableConfigGroup;

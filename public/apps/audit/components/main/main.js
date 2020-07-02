@@ -11,10 +11,10 @@ import {
 } from '@elastic/eui';
 import { toastNotifications } from 'ui/notify';
 import { cloneDeep, set } from 'lodash';
-import { CONFIG_LABELS, CONFIG_GROUPS } from './config';
+import { CONFIG_LABELS, CONFIG_GROUPS, SAMPLE_CONFIG } from './config';
 import ContentPanel from './ContentPanel';
-import { DisplayConfigGroup } from './DisplayConfigGroup';
-import { EditableConfigGroup } from './EditableConfigGroup';
+import DisplayConfigGroup from './DisplayConfigGroup';
+import EditableConfigGroup from './EditableConfigGroup';
 
 export class Main extends React.Component {
   constructor(props) {
@@ -24,60 +24,8 @@ export class Main extends React.Component {
       display_settings: true,
       edit_audit_settings: false,
       edit_compliance_settings: false,
-      config: {
-        enabled: true,
-        audit: {
-          enable_rest: true,
-          disabled_rest_categories: ['GRANTED_PRIVILEGES', 'SSL_EXCEPTION', 'AUTHENTICATED'],
-          enable_transport: true,
-          disabled_transport_categories: ['GRANTED_PRIVILEGES', 'AUTHENTICATED'],
-          resolve_bulk_requests: false,
-          log_request_body: true,
-          resolve_indices: true,
-          exclude_sensitive_headers: true,
-          ignore_users: ['kibanaserver'],
-          ignore_requests: [],
-        },
-        compliance: {
-          enabled: true,
-          internal_config: true,
-          external_config: false,
-          read_metadata_only: true,
-          read_watched_fields: {},
-          read_ignore_users: ['kibanaserver'],
-          write_metadata_only: true,
-          write_log_diffs: false,
-          write_watched_indices: [],
-          write_ignore_users: ['kibanaserver'],
-        },
-      },
-      edit_config: {
-        enabled: true,
-        audit: {
-          enable_rest: true,
-          disabled_rest_categories: ['GRANTED_PRIVILEGES', 'SSL_EXCEPTION', 'AUTHENTICATED'],
-          enable_transport: true,
-          disabled_transport_categories: ['GRANTED_PRIVILEGES', 'AUTHENTICATED'],
-          resolve_bulk_requests: false,
-          log_request_body: true,
-          resolve_indices: true,
-          exclude_sensitive_headers: true,
-          ignore_users: ['kibanaserver'],
-          ignore_requests: [],
-        },
-        compliance: {
-          enabled: true,
-          internal_config: true,
-          external_config: false,
-          read_metadata_only: true,
-          read_watched_fields: {},
-          read_ignore_users: ['kibanaserver'],
-          write_metadata_only: true,
-          write_log_diffs: false,
-          write_watched_indices: [],
-          write_ignore_users: ['kibanaserver'],
-        },
-      },
+      config: SAMPLE_CONFIG,
+      edit_config: SAMPLE_CONFIG
     };
   }
 
@@ -93,10 +41,31 @@ export class Main extends React.Component {
   };
 
   save = () => {
+    console.log(this.state.edit_config);
     this.toggleDisplay(true, false, false);
-    toastNotifications.addSuccess("Audit configuration was successfully updated.")
-    toastNotifications.addDanger("An error occured while attempting to update audit configuration.")
+
+    const { httpClient } = this.props;
+    httpClient
+      .post("../api/v1/configuration/audit/config", this.state.edit_config)
+      .then((resp) => {
+        toastNotifications.addSuccess("Audit configuration was successfully updated.")
+        this.fetchConfig();
+      });
+
   }
+
+  fetchConfig = () => {
+    const { httpClient } = this.props;
+    httpClient.get("../api/v1/configuration/audit").then((resp) => {
+      let responseConfig = resp.data.data.config;
+      this.setState({ config: responseConfig, edit_config: responseConfig });
+    });
+  };
+
+  componentDidMount() {
+    this.fetchConfig();
+  }
+
 
   renderSave = () => {
     return (
@@ -112,7 +81,9 @@ export class Main extends React.Component {
             </EuiButton>
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
-            <EuiButton fill onClick={() => {
+            <EuiButton 
+              fill 
+              onClick={() => {
                 this.save();
               }}
               >Save</EuiButton>
@@ -157,6 +128,12 @@ export class Main extends React.Component {
           <EuiTitle>
             <h3>{CONFIG_LABELS.COMPLIANCE_SETTINGS}</h3>
           </EuiTitle>
+          <EuiSpacer size="xl" />
+          <EditableConfigGroup
+              config_group={CONFIG_GROUPS.COMPLIANCE_CONFIG_SETTINGS}
+              config={this.state.edit_config}
+              handleChange={this.handleChange}
+            ></EditableConfigGroup>
           <EuiSpacer />
           <EuiPanel>
             <EditableConfigGroup

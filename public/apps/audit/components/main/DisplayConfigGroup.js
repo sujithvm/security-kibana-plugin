@@ -4,7 +4,7 @@ import { EuiFlexItem, EuiFlexGrid, EuiSpacer, EuiText, EuiTextColor, EuiTitle } 
 import { displaySettingType } from './utils';
 import { get } from 'lodash';
 
-export const DisplayConfigGroup = ({ config_group, config }) => (
+const DisplayConfigGroup = ({ config_group, config }) => (
   <>
     {config_group.title && (
       <>
@@ -39,3 +39,5 @@ DisplayConfigGroup.propTypes = {
   config_group: PropTypes.object,
   config: PropTypes.object,
 };
+
+export default DisplayConfigGroup;
