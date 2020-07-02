@@ -10,9 +10,9 @@ import {
 } from '@elastic/eui';
 import { cloneDeep, get } from 'lodash';
 import { displayBoolean, generateComboBoxLabels, removeComboBoxLabels } from './utils';
-import { EditorBox } from './EditorBox';
+import EditorBox from './EditorBox';
 
-const EditableConfigGroup = ({ config_group, config, handleChange }) => {
+function EditableSettingGroup({ settingGroup, config, handleChange }) {
   const renderField = (config, setting, handleChange) => {
     const val = get(config, setting.path);
     if (setting.type === 'bool') {
@@ -61,15 +61,15 @@ const EditableConfigGroup = ({ config_group, config, handleChange }) => {
 
   return (
     <>
-      {config_group.title && (
+      {settingGroup.title && (
         <>
           <EuiTitle>
-            <h3>{config_group.title}</h3>
+            <h3>{settingGroup.title}</h3>
           </EuiTitle>
           <EuiSpacer />
         </>
       )}
-      {config_group.settings.map(setting => {
+      {settingGroup.settings.map(setting => {
         return (
           <Fragment key={setting.key}>
             <EuiDescribedFormGroup
@@ -88,10 +88,10 @@ const EditableConfigGroup = ({ config_group, config, handleChange }) => {
   );
 };
 
-EditableConfigGroup.propTypes = {
-  config_group: PropTypes.object,
+EditableSettingGroup.propTypes = {
+  settingGroup: PropTypes.object,
   config: PropTypes.object,
   handleChange: PropTypes.func,
 };
 
-export default EditableConfigGroup;
+export default EditableSettingGroup;

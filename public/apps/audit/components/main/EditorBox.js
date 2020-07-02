@@ -6,7 +6,7 @@ import { get } from 'lodash';
 import 'brace/theme/textmate';
 import 'brace/mode/json';
 
-export const EditorBox = ({ setting, config, handleChange }) => {
+function EditorBox({ setting, config, handleChange }) {
   const [value, updateValue] = useState(JSON.stringify(get(config, setting.path), null, 2));
 
   const onChange = value => {
@@ -44,3 +44,5 @@ EditorBox.propTypes = {
   config: PropTypes.object,
   handleChange: PropTypes.func,
 };
+
+export default EditorBox;

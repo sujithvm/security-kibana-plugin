@@ -165,7 +165,7 @@ const CONFIG = {
   },
 };
 
-export const CONFIG_GROUPS = {
+export const SETTING_GROUPS = {
   AUDIT_SETTINGS: {
     settings: [
       CONFIG.ENABLED,
