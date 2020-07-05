@@ -1,14 +1,15 @@
 import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
+  EuiComboBox,
   EuiDescribedFormGroup,
   EuiFormRow,
-  EuiSwitch,
-  EuiComboBox,
-  EuiTitle,
   EuiSpacer,
+  EuiSwitch,
+  EuiTitle,
+  EuiCodeBlock,
 } from '@elastic/eui';
-import { cloneDeep, get } from 'lodash';
+import { get } from 'lodash';
 import { displayBoolean, generateComboBoxLabels, removeComboBoxLabels } from './utils';
 import EditorBox from './EditorBox';
 
@@ -46,9 +47,7 @@ function EditableSettingGroup({ settingGroup, config, handleChange }) {
             handleChange(setting, removeComboBoxLabels(selectedOptions));
           }}
           onCreateOption={searchValue => {
-            let updatedVal = cloneDeep(val);
-            updatedVal.push(searchValue);
-            handleChange(setting, updatedVal);
+            handleChange(setting, [...val, searchValue]);
           }}
         />
       );
@@ -57,6 +56,16 @@ function EditableSettingGroup({ settingGroup, config, handleChange }) {
     } else {
       return <></>;
     }
+  };
+
+  const renderCodeBlock = setting => {
+    return (
+      <>
+        <EuiCodeBlock language="json" paddingSize="none" isCopyable>
+          {setting.code}
+        </EuiCodeBlock>
+      </>
+    );
   };
 
   return (
@@ -74,7 +83,14 @@ function EditableSettingGroup({ settingGroup, config, handleChange }) {
           <Fragment key={setting.key}>
             <EuiDescribedFormGroup
               title={<h3>{setting.title}</h3>}
-              description={<>{setting.description}</>}
+              description={
+                <>
+                  {setting.description}
+                  {setting.code &&
+                    renderCodeBlock(setting)
+                  }
+                </>
+              }
               fullWidth
             >
               <EuiFormRow label={setting.key}>
@@ -86,7 +102,7 @@ function EditableSettingGroup({ settingGroup, config, handleChange }) {
       })}
     </>
   );
-};
+}
 
 EditableSettingGroup.propTypes = {
   settingGroup: PropTypes.object,

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { EuiCodeEditor } from '@elastic/eui';
+import { EuiCodeEditor, EuiText, EuiTextColor } from '@elastic/eui';
 import { get } from 'lodash';
 
 import 'brace/theme/textmate';
@@ -8,13 +8,16 @@ import 'brace/mode/json';
 
 function EditorBox({ setting, config, handleChange }) {
   const [value, updateValue] = useState(JSON.stringify(get(config, setting.path), null, 2));
+  const [invalid, setInvalid] = useState(false);
 
   const onChange = value => {
     updateValue(value);
     try {
       let parsed = JSON.parse(value);
       handleChange(setting, parsed);
+      setInvalid(false);
     } catch (e) {
+      setInvalid(true);
     }
   };
 
@@ -23,21 +26,28 @@ function EditorBox({ setting, config, handleChange }) {
       <EuiCodeEditor
         mode="json"
         theme="textmate"
-        value={value}
-        onChange={onChange}
         width="100%"
         height="auto"
+        showGutter={false}
         minLines={5}
         maxLines={25}
         setOptions={{
           showLineNumbers: false,
           tabSize: 2,
         }}
-        showGutter={false}
+        value={value}
+        onChange={onChange}
       />
+      {invalid && (
+        <EuiText size="s">
+          <EuiTextColor color="danger">
+            <small>{setting.error}</small>
+          </EuiTextColor>
+        </EuiText>
+      )}
     </>
   );
-};
+}
 
 EditorBox.propTypes = {
   setting: PropTypes.object,

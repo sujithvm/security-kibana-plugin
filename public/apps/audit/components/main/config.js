@@ -1,3 +1,8 @@
+export const API_PATHS = {
+  PUT: '../api/v1/configuration/audit/config',
+  GET: '../api/v1/configuration/audit',
+}
+
 export const CONFIG_LABELS = {
   AUDIT_LOGGING: 'Audit logging',
   GENERAL_SETTINGS: 'General settings',
@@ -5,9 +10,17 @@ export const CONFIG_LABELS = {
   ATTRIBUTE_SETTINGS: 'Attribute settings',
   IGNORE_SETTINGS: 'Ignore settings',
   COMPLIANCE_SETTINGS: 'Compliance settings',
+  COMPLIANCE_CONFIG_SETTINGS: 'Config settings',
   COMPLIANCE_READ: 'Read',
   COMPLIANCE_WRITE: 'Write',
 };
+
+export const RESPONSE_MESSAGES = {
+  FETCH_ERROR_TITLE: "Sorry, there was an error fetching audit configuration.",
+  FETCH_ERROR_MESSAGE: "Please ensure hot reloading of audit configuration is enabled in the security plugin.",
+  UPDATE_SUCCESS: "Audit configuration was successfully updated.",
+  UPDATE_FAILURE: "Audit configuration could not be updated. Please check configuration."
+}
 
 const CONFIG = {
   ENABLED: {
@@ -109,8 +122,22 @@ const CONFIG = {
     ENABLED: {
       title: 'Enable compliance mode',
       key: 'config:compliance:enabled',
-      path: 'enabled',
+      path: 'compliance.enabled',
       description: 'Enable or disable compliance logging',
+      type: 'bool',
+    },
+    INTERNAL_CONFIG : {
+      title: 'Enable internal config logging',
+      key: 'config:compliance:internal_config',
+      path: 'compliance.internal_config',
+      description: 'Enable or disable logging of events on internal security index',
+      type: 'bool',
+    },
+    EXTERNAL_CONFIG : {
+      title: 'Enable external config logging',
+      key: 'config:compliance:external_config',
+      path: 'compliance.external_config',
+      description: 'Enable or disable logging of external configuration',
       type: 'bool',
     },
     READ_METADATA_ONLY: {
@@ -131,8 +158,15 @@ const CONFIG = {
       title: 'Watched fields',
       key: 'config:compliance:read_watched_fields',
       path: 'compliance.read_watched_fields',
-      description: 'List the indices and fields to watch during read events.',
+      description: 'List the indices and fields to watch during read events. Sample data content is as follows',
       type: 'map',
+      code:
+`{
+  "index-name-pattern": ["field-name-pattern"],
+  "logs*": ["message"],
+  "twitter": ["id", "user*"]
+}`,
+      error: "Invalid content. Please check sample data content."
     },
     WRITE_METADATA_ONLY: {
       title: 'Write metadata',
@@ -195,10 +229,16 @@ export const SETTING_GROUPS = {
       CONFIG.AUDIT.IGNORED_USERS, CONFIG.AUDIT.IGNORED_REQUESTS
     ]
   },
-  COMPLIANCE_CONFIG_SETTINGS: {
+  COMPLIANCE_CONFIG_MODE_SETTINGS: {
     title: CONFIG_LABELS.COMPLIANCE,
     settings: [
       CONFIG.COMPLIANCE.ENABLED,
+    ]
+  },
+  COMPLIANCE_CONFIG_SETTINGS: {
+    settings: [
+      CONFIG.COMPLIANCE.INTERNAL_CONFIG,
+      CONFIG.COMPLIANCE.EXTERNAL_CONFIG,
     ]
   },
   COMPLIANCE_SETTINGS_READ: {
@@ -217,33 +257,5 @@ export const SETTING_GROUPS = {
       CONFIG.COMPLIANCE.WRITE_IGNORED_USERS,
       CONFIG.COMPLIANCE.WRITE_WATCHED_FIELDS,
     ]
-  }
-}
-
-export const SAMPLE_CONFIG = {
-  enabled: true,
-  audit: {
-    enable_rest: true,
-    disabled_rest_categories: ['GRANTED_PRIVILEGES', 'SSL_EXCEPTION', 'AUTHENTICATED'],
-    enable_transport: true,
-    disabled_transport_categories: ['GRANTED_PRIVILEGES', 'AUTHENTICATED'],
-    resolve_bulk_requests: false,
-    log_request_body: true,
-    resolve_indices: true,
-    exclude_sensitive_headers: true,
-    ignore_users: ['kibanaserver'],
-    ignore_requests: [],
-  },
-  compliance: {
-    enabled: true,
-    internal_config: true,
-    external_config: false,
-    read_metadata_only: true,
-    read_watched_fields: {},
-    read_ignore_users: ['kibanaserver', 'test'],
-    write_metadata_only: true,
-    write_log_diffs: false,
-    write_watched_indices: [],
-    write_ignore_users: ['kibanaserver'],
   }
 }

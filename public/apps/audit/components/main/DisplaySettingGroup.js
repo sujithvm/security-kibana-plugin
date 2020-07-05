@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { EuiFlexItem, EuiFlexGrid, EuiSpacer, EuiText, EuiTextColor, EuiTitle } from '@elastic/eui';
+import { EuiFlexGrid, EuiFlexItem, EuiSpacer, EuiText, EuiTextColor, EuiTitle } from '@elastic/eui';
 import { displaySettingType } from './utils';
 import { get } from 'lodash';
 

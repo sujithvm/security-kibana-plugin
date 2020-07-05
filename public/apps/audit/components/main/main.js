@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
+  EuiCallOut,
   EuiPage,
   EuiPageBody,
   EuiPanel,
@@ -10,48 +11,87 @@ import {
   EuiButton,
 } from '@elastic/eui';
 import { toastNotifications } from 'ui/notify';
-import { cloneDeep, set } from 'lodash';
-import { CONFIG_LABELS, SETTING_GROUPS, SAMPLE_CONFIG } from './config';
+import { set } from 'lodash';
+import { API_PATHS, CONFIG_LABELS, SETTING_GROUPS, RESPONSE_MESSAGES } from './config';
 import ContentPanel from './ContentPanel';
 import DisplaySettingGroup from './DisplaySettingGroup';
 import EditableSettingGroup from './EditableSettingGroup';
 
 export function Main(props) {
-  const [config, setConfig] = useState(SAMPLE_CONFIG);
-  const [editConfig, setEditConfig] = useState(SAMPLE_CONFIG);
+  const [config, setConfig] = useState(null);
+  const [editConfig, setEditConfig] = useState(null);
   const [showAllSettings, setShowAllSettings] = useState(true);
   const [showConfigureAudit, setShowConfigureAudit] = useState(false);
   const [showConfigureCompliance, setShowConfigureCompliance] = useState(false);
+  const [showError, setShowError] = useState(false);
+
+  useEffect(() => {
+    fetchConfig();
+  }, [props.httpClient]);
 
   const handleChange = (setting, val) => {
-    const updatedConfig = cloneDeep(editConfig);
-    set(updatedConfig, setting.path, val);
-    setEditConfig(updatedConfig);
+    const editedConfig = set({ ...editConfig }, setting.path, val);
+    setEditConfig(editedConfig);
   };
 
-  const toggleDisplay = (show_all_settings, show_configure_audit, show_configure_compliance) => {
+  const handleChangeAudit = (setting, val) => {
+    const editedConfig = set({ ...editConfig }, setting.path, val);
+    saveConfig(editedConfig, false);
+  };
+
+  const toggleDisplay = (
+    show_all_settings = true,
+    show_configure_audit = false,
+    show_configure_compliance = false
+  ) => {
     setShowAllSettings(show_all_settings);
     setShowConfigureAudit(show_configure_audit);
     setShowConfigureCompliance(show_configure_compliance);
     window.scrollTo({ top: 0 });
   };
 
-  const save = () => {
-    toggleDisplay(true, false, false);
+  const cancel = () => {
+    toggleDisplay();
+    setEditConfig(config);
+  };
+
+  const saveConfig = (payload, showToast = true) => {
     const { httpClient } = props;
-    httpClient.post('../api/v1/configuration/audit/config', editConfig).then(resp => {
-      toastNotifications.addSuccess('Audit configuration was successfully updated.');
-      fetchConfig();
-    });
+    httpClient
+      .post(API_PATHS.PUT, payload)
+      .then(() => {
+        if (showToast) {
+          toastNotifications.addSuccess(RESPONSE_MESSAGES.UPDATE_SUCCESS);
+        }
+        toggleDisplay();
+        fetchConfig();
+      })
+      .catch(() => {
+        toastNotifications.addDanger(RESPONSE_MESSAGES.UPDATE_FAILURE);
+      });
   };
 
   const fetchConfig = () => {
     const { httpClient } = props;
-    httpClient.get('../api/v1/configuration/audit').then(resp => {
-      let responseConfig = resp.data.data.config;
-      setConfig(responseConfig);
-      setEditConfig(responseConfig);
-    });
+    httpClient
+      .get(API_PATHS.GET)
+      .then(resp => {
+        let responseConfig = resp.data.data.config;
+        setConfig(responseConfig);
+        setEditConfig(responseConfig);
+        setShowError(false);
+      })
+      .catch(() => {
+        setShowError(true);
+      });
+  };
+
+  const renderError = () => {
+    return (
+      <EuiCallOut title={RESPONSE_MESSAGES.FETCH_ERROR_TITLE} color="danger" iconType="alert">
+        <p>{RESPONSE_MESSAGES.FETCH_ERROR_MESSAGE}</p>
+      </EuiCallOut>
+    );
   };
 
   const renderSave = () => {
@@ -61,7 +101,7 @@ export function Main(props) {
           <EuiFlexItem grow={false}>
             <EuiButton
               onClick={() => {
-                toggleDisplay(true, false, false);
+                cancel();
               }}
             >
               Cancel
@@ -71,7 +111,7 @@ export function Main(props) {
             <EuiButton
               fill
               onClick={() => {
-                save();
+                saveConfig(editConfig);
               }}
             >
               Save
@@ -119,6 +159,11 @@ export function Main(props) {
           </EuiTitle>
           <EuiSpacer size="xl" />
           <EditableSettingGroup
+            settingGroup={SETTING_GROUPS.COMPLIANCE_CONFIG_MODE_SETTINGS}
+            config={editConfig}
+            handleChange={handleChange}
+          ></EditableSettingGroup>
+          <EditableSettingGroup
             settingGroup={SETTING_GROUPS.COMPLIANCE_CONFIG_SETTINGS}
             config={editConfig}
             handleChange={handleChange}
@@ -153,49 +198,61 @@ export function Main(props) {
           <EditableSettingGroup
             settingGroup={SETTING_GROUPS.AUDIT_SETTINGS}
             config={editConfig}
-            handleChange={handleChange}
+            handleChange={handleChangeAudit}
           ></EditableSettingGroup>
         </ContentPanel>
-        <EuiSpacer />
-        <ContentPanel
-          title={CONFIG_LABELS.GENERAL_SETTINGS}
-          configureHandler={() => {
-            toggleDisplay(false, true, false);
-          }}
-        >
-          <DisplaySettingGroup settingGroup={SETTING_GROUPS.LAYER_SETTINGS} config={config} />
-          <EuiSpacer size="xl" />
-          <DisplaySettingGroup settingGroup={SETTING_GROUPS.ATTRIBUTE_SETTINGS} config={config} />
-          <EuiSpacer size="xl" />
-          <DisplaySettingGroup settingGroup={SETTING_GROUPS.IGNORE_SETTINGS} config={config} />
-        </ContentPanel>
-        <EuiSpacer />
-        <ContentPanel
-          title={CONFIG_LABELS.COMPLIANCE_SETTINGS}
-          configureHandler={() => {
-            toggleDisplay(false, false, true);
-          }}
-        >
-          <DisplaySettingGroup
-            config={config}
-            settingGroup={SETTING_GROUPS.COMPLIANCE_CONFIG_SETTINGS}
-          />
-          <EuiSpacer />
-          <EuiPanel>
-            <DisplaySettingGroup
-              settingGroup={SETTING_GROUPS.COMPLIANCE_SETTINGS_READ}
-              config={config}
-            />
-          </EuiPanel>
-          <EuiSpacer />
-          <EuiPanel>
-            <DisplaySettingGroup
-              settingGroup={SETTING_GROUPS.COMPLIANCE_SETTINGS_WRITE}
-              config={config}
-            />
-          </EuiPanel>
-        </ContentPanel>
-        <EuiSpacer />
+        {config.enabled && (
+          <>
+            <EuiSpacer />
+            <ContentPanel
+              title={CONFIG_LABELS.GENERAL_SETTINGS}
+              configureHandler={() => {
+                toggleDisplay(false, true, false);
+              }}
+            >
+              <DisplaySettingGroup settingGroup={SETTING_GROUPS.LAYER_SETTINGS} config={config} />
+              <EuiSpacer size="xl" />
+              <DisplaySettingGroup
+                settingGroup={SETTING_GROUPS.ATTRIBUTE_SETTINGS}
+                config={config}
+              />
+              <EuiSpacer size="xl" />
+              <DisplaySettingGroup settingGroup={SETTING_GROUPS.IGNORE_SETTINGS} config={config} />
+            </ContentPanel>
+            <EuiSpacer />
+            <ContentPanel
+              title={CONFIG_LABELS.COMPLIANCE_SETTINGS}
+              configureHandler={() => {
+                toggleDisplay(false, false, true);
+              }}
+            >
+              <DisplaySettingGroup
+                config={config}
+                settingGroup={SETTING_GROUPS.COMPLIANCE_CONFIG_MODE_SETTINGS}
+              />
+              <EuiSpacer />
+              <DisplaySettingGroup
+                config={config}
+                settingGroup={SETTING_GROUPS.COMPLIANCE_CONFIG_SETTINGS}
+              />
+              <EuiSpacer />
+              <EuiPanel>
+                <DisplaySettingGroup
+                  settingGroup={SETTING_GROUPS.COMPLIANCE_SETTINGS_READ}
+                  config={config}
+                />
+              </EuiPanel>
+              <EuiSpacer />
+              <EuiPanel>
+                <DisplaySettingGroup
+                  settingGroup={SETTING_GROUPS.COMPLIANCE_SETTINGS_WRITE}
+                  config={config}
+                />
+              </EuiPanel>
+            </ContentPanel>
+            <EuiSpacer />
+          </>
+        )}
       </>
     );
   };
@@ -204,9 +261,10 @@ export function Main(props) {
     <>
       <EuiPage>
         <EuiPageBody>
-          {showAllSettings && renderAuditSettings()}
-          {showConfigureAudit && renderEditableAuditSettings()}
-          {showConfigureCompliance && renderEditableComplianceSettings()}
+          {showError && renderError()}
+          {config && editConfig && showAllSettings && renderAuditSettings()}
+          {config && editConfig && showConfigureAudit && renderEditableAuditSettings()}
+          {config && editConfig && showConfigureCompliance && renderEditableComplianceSettings()}
         </EuiPageBody>
       </EuiPage>
     </>

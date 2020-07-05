@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  EuiPanel,
-  EuiHorizontalRule,
-  EuiTitle,
+  EuiButton,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiButton,
+  EuiHorizontalRule,
+  EuiPanel,
+  EuiTitle,
 } from '@elastic/eui';
 
 const ContentPanel = ({ title, children, configureHandler }) => (
