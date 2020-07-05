@@ -15,7 +15,7 @@ import { set } from 'lodash';
 import { API_PATHS, CONFIG_LABELS, SETTING_GROUPS, RESPONSE_MESSAGES } from './config';
 import ContentPanel from './ContentPanel';
 import DisplaySettingGroup from './DisplaySettingGroup';
-import EditableSettingGroup from './EditableSettingGroup';
+import EditSettingGroup from './EditSettingGroup';
 
 export function Main(props) {
   const [config, setConfig] = useState(null);
@@ -126,23 +126,23 @@ export function Main(props) {
     return (
       <>
         <EuiPanel>
-          <EditableSettingGroup
+          <EditSettingGroup
             settingGroup={SETTING_GROUPS.LAYER_SETTINGS}
             config={editConfig}
             handleChange={handleChange}
-          ></EditableSettingGroup>
+          ></EditSettingGroup>
           <EuiSpacer size="xl" />
-          <EditableSettingGroup
+          <EditSettingGroup
             settingGroup={SETTING_GROUPS.ATTRIBUTE_SETTINGS}
             config={editConfig}
             handleChange={handleChange}
-          ></EditableSettingGroup>
+          ></EditSettingGroup>
           <EuiSpacer size="xl" />
-          <EditableSettingGroup
+          <EditSettingGroup
             settingGroup={SETTING_GROUPS.IGNORE_SETTINGS}
             config={editConfig}
             handleChange={handleChange}
-          ></EditableSettingGroup>
+          ></EditSettingGroup>
         </EuiPanel>
         <EuiSpacer />
         {renderSave()}
@@ -158,31 +158,31 @@ export function Main(props) {
             <h3>{CONFIG_LABELS.COMPLIANCE_SETTINGS}</h3>
           </EuiTitle>
           <EuiSpacer size="xl" />
-          <EditableSettingGroup
+          <EditSettingGroup
             settingGroup={SETTING_GROUPS.COMPLIANCE_CONFIG_MODE_SETTINGS}
             config={editConfig}
             handleChange={handleChange}
-          ></EditableSettingGroup>
-          <EditableSettingGroup
+          ></EditSettingGroup>
+          <EditSettingGroup
             settingGroup={SETTING_GROUPS.COMPLIANCE_CONFIG_SETTINGS}
             config={editConfig}
             handleChange={handleChange}
-          ></EditableSettingGroup>
+          ></EditSettingGroup>
           <EuiSpacer />
           <EuiPanel>
-            <EditableSettingGroup
+            <EditSettingGroup
               settingGroup={SETTING_GROUPS.COMPLIANCE_SETTINGS_READ}
               config={editConfig}
               handleChange={handleChange}
-            ></EditableSettingGroup>
+            ></EditSettingGroup>
           </EuiPanel>
           <EuiSpacer size="xl" />
           <EuiPanel>
-            <EditableSettingGroup
+            <EditSettingGroup
               settingGroup={SETTING_GROUPS.COMPLIANCE_SETTINGS_WRITE}
               config={editConfig}
               handleChange={handleChange}
-            ></EditableSettingGroup>
+            ></EditSettingGroup>
           </EuiPanel>
         </EuiPanel>
         <EuiSpacer />
@@ -195,11 +195,11 @@ export function Main(props) {
     return (
       <>
         <ContentPanel title={CONFIG_LABELS.AUDIT_LOGGING}>
-          <EditableSettingGroup
+          <EditSettingGroup
             settingGroup={SETTING_GROUPS.AUDIT_SETTINGS}
             config={editConfig}
             handleChange={handleChangeAudit}
-          ></EditableSettingGroup>
+          ></EditSettingGroup>
         </ContentPanel>
         {config.enabled && (
           <>

@@ -13,7 +13,7 @@ import { get } from 'lodash';
 import { displayBoolean, generateComboBoxLabels, removeComboBoxLabels } from './utils';
 import EditorBox from './EditorBox';
 
-function EditableSettingGroup({ settingGroup, config, handleChange }) {
+function EditSettingGroup({ settingGroup, config, handleChange }) {
   const renderField = (config, setting, handleChange) => {
     const val = get(config, setting.path);
     if (setting.type === 'bool') {
@@ -104,10 +104,10 @@ function EditableSettingGroup({ settingGroup, config, handleChange }) {
   );
 }
 
-EditableSettingGroup.propTypes = {
+EditSettingGroup.propTypes = {
   settingGroup: PropTypes.object,
   config: PropTypes.object,
   handleChange: PropTypes.func,
 };
 
-export default EditableSettingGroup;
+export default EditSettingGroup;
