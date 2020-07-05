@@ -46,8 +46,7 @@
     "requirefrom": "^0.2.0",
     "typescript": "^3.5.1",
     "uuid": "^3.3.2",
-    "wreck": "14.x.x",
-    "@kbn/i18n": "link:../../packages/kbn-i18n"
+    "wreck": "14.x.x"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
@@ -73,10 +72,6 @@
     "@kbn/plugin-helpers": "link:../../packages/kbn-plugin-helpers",
     "lint-staged": "^8.1.6",
     "ts-loader": "^6.2.1",
-    "ui-select": "^0.19.8",
-
-    "@elastic/eslint-config-kibana": "link:../../packages/eslint-config-kibana",
-    "@elastic/eslint-import-resolver-kibana": "link:../../packages/kbn-eslint-import-resolver-kibana",
-    "@kbn/expect": "link:../../packages/kbn-expect"
+    "ui-select": "^0.19.8"
   }
 }
