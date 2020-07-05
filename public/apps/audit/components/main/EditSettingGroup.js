@@ -13,8 +13,8 @@ import { get } from 'lodash';
 import { displayBoolean, generateComboBoxLabels, removeComboBoxLabels } from './utils';
 import EditorBox from './EditorBox';
 
-function EditSettingGroup({ settingGroup, config, handleChange }) {
-  const renderField = (config, setting, handleChange) => {
+function EditSettingGroup({ settingGroup, config, handleChange, handleInvalid }) {
+  const renderField = (config, setting, handleChange, handleInvalid) => {
     const val = get(config, setting.path);
     if (setting.type === 'bool') {
       return (
@@ -52,7 +52,7 @@ function EditSettingGroup({ settingGroup, config, handleChange }) {
         />
       );
     } else if (setting.type === 'map') {
-      return <EditorBox config={config} handleChange={handleChange} setting={setting} />;
+      return <EditorBox config={config} handleChange={handleChange} handleInvalid={handleInvalid} setting={setting} />;
     } else {
       return <></>;
     }
@@ -94,7 +94,7 @@ function EditSettingGroup({ settingGroup, config, handleChange }) {
               fullWidth
             >
               <EuiFormRow label={setting.key}>
-                {renderField(config, setting, handleChange)}
+                {renderField(config, setting, handleChange, handleInvalid)}
               </EuiFormRow>
             </EuiDescribedFormGroup>
           </Fragment>
@@ -108,6 +108,7 @@ EditSettingGroup.propTypes = {
   settingGroup: PropTypes.object,
   config: PropTypes.object,
   handleChange: PropTypes.func,
+  handleInvalid: PropTypes.func,
 };
 
 export default EditSettingGroup;

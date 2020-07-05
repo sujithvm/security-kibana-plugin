@@ -11,7 +11,7 @@ import {
   EuiButton,
 } from '@elastic/eui';
 import { toastNotifications } from 'ui/notify';
-import { set } from 'lodash';
+import { cloneDeep, pull, set } from 'lodash';
 import { API_PATHS, CONFIG_LABELS, SETTING_GROUPS, RESPONSE_MESSAGES } from './config';
 import ContentPanel from './ContentPanel';
 import DisplaySettingGroup from './DisplaySettingGroup';
@@ -24,19 +24,28 @@ export function Main(props) {
   const [showConfigureAudit, setShowConfigureAudit] = useState(false);
   const [showConfigureCompliance, setShowConfigureCompliance] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [invalidSettings, setInvalidSettings] = useState([]);
 
   useEffect(() => {
     fetchConfig();
   }, [props.httpClient]);
 
   const handleChange = (setting, val) => {
-    const editedConfig = set({ ...editConfig }, setting.path, val);
+    const editedConfig = set(cloneDeep(editConfig), setting.path, val);
     setEditConfig(editedConfig);
   };
 
   const handleChangeAudit = (setting, val) => {
-    const editedConfig = set({ ...editConfig }, setting.path, val);
+    const editedConfig = set(cloneDeep(editConfig), setting.path, val);
     saveConfig(editedConfig, false);
+  };
+
+  const handleInvalid = (key, error) => {
+    const invalid = pull([...invalidSettings], key);
+    if (error) {
+      invalid.push(key);
+    }
+    setInvalidSettings(invalid);
   };
 
   const toggleDisplay = (
@@ -53,6 +62,7 @@ export function Main(props) {
   const cancel = () => {
     toggleDisplay();
     setEditConfig(config);
+    setInvalidSettings([]);
   };
 
   const saveConfig = (payload, showToast = true) => {
@@ -87,11 +97,11 @@ export function Main(props) {
   };
 
   const renderError = () => {
-    return (
+    return showError ? (
       <EuiCallOut title={RESPONSE_MESSAGES.FETCH_ERROR_TITLE} color="danger" iconType="alert">
         <p>{RESPONSE_MESSAGES.FETCH_ERROR_MESSAGE}</p>
       </EuiCallOut>
-    );
+    ) : null;
   };
 
   const renderSave = () => {
@@ -110,6 +120,7 @@ export function Main(props) {
           <EuiFlexItem grow={false}>
             <EuiButton
               fill
+              isDisabled={invalidSettings.length != 0}
               onClick={() => {
                 saveConfig(editConfig);
               }}
@@ -174,6 +185,7 @@ export function Main(props) {
               settingGroup={SETTING_GROUPS.COMPLIANCE_SETTINGS_READ}
               config={editConfig}
               handleChange={handleChange}
+              handleInvalid={handleInvalid}
             ></EditSettingGroup>
           </EuiPanel>
           <EuiSpacer size="xl" />
@@ -257,14 +269,22 @@ export function Main(props) {
     );
   };
 
+  const renderBody = () => {
+    return config && editConfig ? (
+      <>
+        {showAllSettings && renderAuditSettings()}
+        {showConfigureAudit && renderEditableAuditSettings()}
+        {showConfigureCompliance && renderEditableComplianceSettings()}
+      </>
+    ) : null;
+  };
+
   return (
     <>
       <EuiPage>
         <EuiPageBody>
-          {showError && renderError()}
-          {config && editConfig && showAllSettings && renderAuditSettings()}
-          {config && editConfig && showConfigureAudit && renderEditableAuditSettings()}
-          {config && editConfig && showConfigureCompliance && renderEditableComplianceSettings()}
+          {renderError()}
+          {renderBody()}
         </EuiPageBody>
       </EuiPage>
     </>

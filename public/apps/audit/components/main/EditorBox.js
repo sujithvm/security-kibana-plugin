@@ -6,7 +6,7 @@ import { get } from 'lodash';
 import 'brace/theme/textmate';
 import 'brace/mode/json';
 
-function EditorBox({ setting, config, handleChange }) {
+function EditorBox({ setting, config, handleChange, handleInvalid }) {
   const [value, updateValue] = useState(JSON.stringify(get(config, setting.path), null, 2));
   const [invalid, setInvalid] = useState(false);
 
@@ -15,9 +15,11 @@ function EditorBox({ setting, config, handleChange }) {
     try {
       let parsed = JSON.parse(value);
       handleChange(setting, parsed);
+      handleInvalid(setting.key, false);
       setInvalid(false);
     } catch (e) {
       setInvalid(true);
+      handleInvalid(setting.key, true);
     }
   };
 
@@ -53,6 +55,7 @@ EditorBox.propTypes = {
   setting: PropTypes.object,
   config: PropTypes.object,
   handleChange: PropTypes.func,
+  handleInvalid: PropTypes.func,
 };
 
 export default EditorBox;
